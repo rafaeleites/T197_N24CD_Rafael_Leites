@@ -1,4 +1,5 @@
-# T197_N24CD_Rafael_Leites
+# Projeto 2 Aplicação registro de ponto (Administrador)
+
 
 Rafael da Silva Leites - 2420524
 Davi de Paula Pessoa - 2320298
