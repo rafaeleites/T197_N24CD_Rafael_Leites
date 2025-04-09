@@ -6,7 +6,7 @@ const cor2 = "f0dc82" //dourado
 const cor3 = "2F2F2F" // Cinza
 const cor4 = "F5F5DC" // Bege
 const cor5 = "B8860B" // dourado2
-
+//Para a biblioteca de icones, acessa https://oblador.github.io/react-native-vector-icons/ mas é so na bibli chamada MaterialCommunityIcons
 
 const styles = StyleSheet.create({  // USAR SOMENTE PARA ESTILOS UNIVERSAIS DO PROJETO, Fazer os estilos em cada tela com: const styles = StyleSheet.create({ ....
   container_principal: {
