@@ -13,7 +13,7 @@ function TelaLogin() {
 
       <View style={styles.container_image_login}>
         <Image style = {styles.imagem_login}
-        source={require('./assets/Logo1.png')}
+        source={require(".\assets\Logo1.png")}
         />
       </View>
 
