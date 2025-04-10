@@ -4,10 +4,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native';
 
 const cor1 = '#000000' //preto
-const cor2 = "f0dc82" //dourado
-const cor3 = "2F2F2F" // Cinza
-const cor4 = "F5F5DC" // Bege
-const cor5 = "B8860B" // dourado2
+const cor2 = '#FFFFFF' //branco
+
 
 export default function TelaPerfil() {
   const navigation = useNavigation();
@@ -15,7 +13,7 @@ export default function TelaPerfil() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('TelaRecursos')}>
-        <MaterialCommunityIcons name="arrow-left" size={30} color="#f0dc82" />
+        <MaterialCommunityIcons name="arrow-left" size={30} color='#FFFFFF' />
       </TouchableOpacity>
 
       <Text style={styles.title}>Meu Perfil</Text>
@@ -37,6 +35,10 @@ export default function TelaPerfil() {
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Alterar senha</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TelaLogin')}>
+        <Text style={styles.buttonText}>Sair</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    backgroundColor: "#f0dc82",
+    backgroundColor: cor2,
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 15,
@@ -71,13 +73,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   name: {
-    color: "#f0dc82",
+    color: cor2,
     fontSize: 16,
     marginBottom: 30,
   },
   button: {
     width: '80%',
-    backgroundColor: "#f0dc82",
+    backgroundColor: cor2,
     paddingVertical: 15,
     borderRadius: 20,
     marginBottom: 15,

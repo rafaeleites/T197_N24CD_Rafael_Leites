@@ -4,10 +4,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native';
 
 const cor1 = '#000000'; //preto
-const cor2 = 'f0dc82'; //dourado
-const cor3 = '2F2F2F'; // Cinza
-const cor4 = 'F5F5DC'; // Bege
-const cor5 = 'B8860B'; // dourado2
+const cor2 = 'f0dc82'; //branco
+
 
 function TelaRecursos() {
   const navigation = useNavigation();
@@ -16,14 +14,6 @@ function TelaRecursos() {
     <View style={styles.container}>
       <Text style={styles.title}>Recursos</Text>
       <View style={styles.grid}>
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons
-            name="file-document"
-            size={32}
-            color="f0dc82"
-          />
-          <Text style={styles.buttonText}>Requisições</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons
