@@ -9,37 +9,47 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { useEffect, useState } from 'react';
 
 const cor1 = '#000000' //preto
-const cor2 = "f0dc82" //dourado
-const cor3 = "2F2F2F" // Cinza
-const cor4 = "F5F5DC" // Bege
-const cor5 = "B8860B" // dourado2
+const cor2 = "#FFFFFF" //dourado
+
 
 export default function TelaEstagiarios() {
+  const [estagiarios, setEstagiarios] = useState([]);
   const navigation = useNavigation();
 
-  const estagiarios = [
-    {
-      nome: 'Jadilson Coelho',
-      setor: 'Administrativo',
-      universidade: 'Universidade de Fortaleza',
-      //avatar: require('./assets/avatar1.png'), // Substitua com seu caminho de imagem
-    },
-    {
-      nome: 'Jucilene Lima',
-      setor: 'Consultivo',
-      universidade: 'Universidade Federal do Ceará',
-      //avatar: require('./assets/avatar2.png'),
-    },
-    {
-      nome: 'Marcio Santos',
-      setor: 'Contencioso',
-      universidade: 'Universidade Estadual do Ceará',
-      //avatar: require('./assets/avatar3.png'),
-    },
-  ];
+  useEffect(() => {
+    const db = getDatabase();
+    const estagiariosRef = ref(db, 'EstagiariosTeste');
 
+    onValue(estagiariosRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("Dados recebidos do Firebase:", data); // <--- TESTE
+      if (data) {
+        const lista = Object.entries(data).map(([id, info]) => ({
+          id,
+          ...info,
+        }));
+        setEstagiarios(lista);
+      }
+    });
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('TelaPerfilEstagiario', { estagiario: item })}
+      style={styles.card}
+    >
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.nome}</Text>
+        <Text style={styles.email}>{item.email}</Text>
+        <Text style={styles.carga}>Carga Horária: {item.cargaHoraria} horas</Text>
+      </View>
+    </TouchableOpacity>
+  );
+ 
   return (
     <View style={styles.container}>
       {/* Título */}
@@ -47,34 +57,29 @@ export default function TelaEstagiarios() {
         <Text style={styles.title}>Estagiários</Text>
       </View>
 
-      {/* Lista de estagiários */}
-      <ScrollView contentContainerStyle={styles.scrollContainer} onPress={() => navigation.navigate('TelaPerfilEstagiario')}>
-        {estagiarios.map((item, index) => (
-          <View key={index} style={styles.card}>
-            <Image source={item.avatar} style={styles.avatar} />
-            <View style={styles.info}>
-              <Text style={styles.name}>{item.nome}</Text>
-              <Text style={styles.setor}>Setor: {item.setor}</Text>
-              <Text style={styles.universidade}>{item.universidade}</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+      {/* Lista */}
+      <FlatList
+        data={estagiarios}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.scrollContainer}
+      />
+      
 
-      {/* Rodapé com ícones */} // COPIAR COMO MODELO DE RODAPÉ
+      {/* Rodapé com ícones */} 
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
           <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />{' '}
-          //Engrenagem
+          
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
           <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />{' '}
-          //Engrenagem
+          
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate('TelaEstagiarios')}>
           <MaterialCommunityIcons name="account-group" size={30} color="#000" />{' '}
-          //Pessoas
+          
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
@@ -85,7 +90,8 @@ export default function TelaEstagiarios() {
         </TouchableOpacity>
       </View>
     </View>
-  )}
+  );
+}
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -152,6 +158,16 @@ export default function TelaEstagiarios() {
       paddingVertical: 15,
       paddingTop: 15,
       borderRadius: 15,
+    },
+    email: {
+      fontSize: 14,
+      marginTop: 2,
+      color: '#444',
+    },
+    carga: {
+      fontSize: 13,
+      marginTop: 2,
+      color: '#666',
     },
   });
 

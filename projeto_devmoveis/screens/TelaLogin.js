@@ -12,27 +12,14 @@ function TelaLogin() {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    signInWithEmailAndPassword(auth, text_email, password)
-      .then(async (userCredential) => {
+    signInWithEmailAndPassword(auth, text_email.trim(), password)
+      .then((userCredential) => {
         const user = userCredential.user;
-
-        // Consulta no Firestore se o e-mail está na coleção admins
-        const q = query(collection(db, "admins"), where("email", "==", text_email));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          // É um admin, pode prosseguir
-          navigation.navigate("TelaRecursos");
-        } else {
-          // Não é admin
-          alert("Acesso negado. Você não é um administrador.");
-          // Opcional: auth.signOut(); se quiser deslogar direto
-        }
+        console.log("Logado como:", user.email);
+        navigation.navigate("TelaRecursos"); // ou a tela que quiser
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
+        console.log("Erro ao logar:", error.message);
       });
   };
 
