@@ -2,16 +2,44 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Button } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from '../Back-End/firebaseConfig'
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 
 function TelaLogin() {
   const [text_email, setText_email] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, text_email, password)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+
+        // Consulta no Firestore se o e-mail está na coleção admins
+        const q = query(collection(db, "admins"), where("email", "==", text_email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          // É um admin, pode prosseguir
+          navigation.navigate("TelaRecursos");
+        } else {
+          // Não é admin
+          alert("Acesso negado. Você não é um administrador.");
+          // Opcional: auth.signOut(); se quiser deslogar direto
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  };
+
   return (
     <View style={styles.container_principal}>
 
-      
+
 
       <View style={styles.container_image_login}>
         <Image style={styles.imagem_login}
@@ -19,7 +47,7 @@ function TelaLogin() {
         />
       </View>
 
-      
+
       <View style={styles.box_login}>
         <View style={styles.view_texto_contato}>
           <Text style={styles.texto_contato}> Bem Vindo </Text>
@@ -41,7 +69,7 @@ function TelaLogin() {
           secureTextEntry={true}
         />
 
-        <TouchableOpacity style={styles.botao_login} onPress={() => navigation.navigate('TelaEstagiarios')}>
+        <TouchableOpacity style={styles.botao_login} onPress={(handleLogin)}>
           <Text style={styles.texto_botao}>Entrar</Text>
         </TouchableOpacity>
 
@@ -61,10 +89,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'black', // azul escuro ou como preferir
     alignItems: 'center',
     padding: 5,
-    
+
   },
   box_login: {
-    
+
     width: '85%',
     backgroundColor: '#fff',
     borderRadius: 20,
@@ -85,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
   },
-  
+
   botao_login: {
     backgroundColor: 'black',
     paddingVertical: 12,
@@ -105,7 +133,7 @@ const styles = StyleSheet.create({
   imagem_login: {
     width: 294,
     height: 119,
-    
+
 
   },
 
@@ -128,7 +156,7 @@ const styles = StyleSheet.create({
   },
 
 
-  
+
 
 
 
