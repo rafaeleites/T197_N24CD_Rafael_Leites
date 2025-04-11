@@ -48,7 +48,7 @@ export default function TelaEstagiarios() {
       </View>
 
       {/* Lista de estagiários */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} onPress={() => navigation.navigate('TelaPerfilEstagiario')}>
         {estagiarios.map((item, index) => (
           <View key={index} style={styles.card}>
             <Image source={item.avatar} style={styles.avatar} />
