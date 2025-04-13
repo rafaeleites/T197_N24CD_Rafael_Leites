@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+
 const cor1 = '#000000'; //preto
-const cor2 = "f0dc82"; //dourado
+const cor2 = "#f0dc82"; //dourado
 const cor3 = '2F2F2F'; // Cinza
 const cor4 = 'F5F5DC'; // Bege
 const cor5 = 'B8860B'; // dourado2
@@ -41,20 +42,19 @@ export default function TelaRequisicoes() {
         ))}
       </ScrollView>
 
-      {/* Rodapé com ícones */} // COPIAR COMO MODELO DE RODAPÉ
+      {/* Rodapé com ícones */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />{' '}
-          //Engrenagem
+          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" /> 
+          {/* Engrenagem */}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
-          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />{' '}
-          //Engrenagem
+          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
+          {/* Comentários */}
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TelaEstagiarios')}>
-          <MaterialCommunityIcons name="account-group" size={30} color="#000" />{' '}
-          //Pessoas
+        <TouchableOpacity onPress={() => navigation.navigate('TelaEstagiarios')}>
+          <MaterialCommunityIcons name="account-group" size={30} color="#000" />
+          {/* Pessoas */}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
@@ -66,8 +66,8 @@ export default function TelaRequisicoes() {
       </View>
     </View>
   );
-  
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -129,4 +129,3 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-

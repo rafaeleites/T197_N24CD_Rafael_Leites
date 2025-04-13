@@ -3,9 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const cor1 = '#000000'; //preto
-const cor2 = 'f0dc82'; //branco
-
+const cor1 = '#000000'; // preto
+const cor2 = 'f0dc82'; // dourado
 
 function TelaRecursos() {
   const navigation = useNavigation();
@@ -56,27 +55,31 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Controle de carga horária</Text>
         </TouchableOpacity>
       </View>
-      {/* Rodapé com ícones */} // COPIAR COMO MODELO DE RODAPÉ
+
+      {/* Rodapé com ícones - COPIAR COMO MODELO DE RODAPÉ */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />{' '}
-          //Engrenagem
+          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
+          {/* Engrenagem */}
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
-          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />{' '}
-          //Engrenagem
+          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
+          {/* Comentários */}
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TelaEstagiarios')}>
-          <MaterialCommunityIcons name="account-group" size={30} color="#000" />{' '}
-          //Pessoas
+
+        <TouchableOpacity onPress={() => navigation.navigate('TelaEstagiarios')}>
+          <MaterialCommunityIcons name="account-group" size={30} color="#000" />
+          {/* Pessoas */}
         </TouchableOpacity>
+
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
-            name="account-circle-outline" //Foto de perfil
+            name="account-circle-outline"
             size={30}
             color="#000"
           />
+          {/* Foto de perfil */}
         </TouchableOpacity>
       </View>
     </View>
