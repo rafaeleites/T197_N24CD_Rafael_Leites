@@ -54,7 +54,7 @@ function TelaCadastro() {
         onChangeText={setConfirmaSenha}
         secureTextEntry={true}
       />
-      <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
+      <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleCadastro')}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
       <TouchableOpacity

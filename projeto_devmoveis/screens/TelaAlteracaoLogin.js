@@ -18,10 +18,10 @@ function TelaAlteracaoLogin() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Alterar Dados de Acesso</Text>
-      <TouchableOpacity style={styles.botao} onPress={handleAlterarSenha}>
+      <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleAlterarSenha')}>
         <Text style={styles.textoBotao}>Alterar Senha</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.botao} onPress={handleAlterarEmail}>
+      <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleAlterarEmail')}>
         <Text style={styles.textoBotao}>Alterar Email</Text>
       </TouchableOpacity>
       <TouchableOpacity
