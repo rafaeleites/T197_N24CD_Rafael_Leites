@@ -8,6 +8,8 @@ function TelaCadastro() {
   const [senha, setSenha] = useState('');
   const [confirmaSenha, setConfirmaSenha] = useState('');
   const navigation = useNavigation();
+  
+
 
   const handleCadastro = () => {
     if (senha !== confirmaSenha) {
@@ -54,7 +56,7 @@ function TelaCadastro() {
         onChangeText={setConfirmaSenha}
         secureTextEntry={true}
       />
-      <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleCadastro')}>
+      <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
       <TouchableOpacity

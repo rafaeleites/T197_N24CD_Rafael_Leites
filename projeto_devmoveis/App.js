@@ -8,7 +8,7 @@ import TelaPerfil from './screens/TelaPerfil';
 import TelaRequisicoes from './screens/TelaRequisicoes';
 import TelaLogin from './screens/TelaLogin'; 
 import TelaPerfilEstagiario from './screens/TelaPerfilEstagiario'; 
-import TelaAlteracaoLogin from './screens/TelaAlteracaoLogin'; // Importando a nova tela
+import TelaAlteracaoLogin from './screens/TelaAlteracaoLogin';
 import TelaCadastro from './screens/TelaCadastro'; // Importando a nova tela
 
 const Stack = createNativeStackNavigator();
@@ -23,8 +23,9 @@ export default function App() {
         <Stack.Screen name="TelaRequisicoes" component={TelaRequisicoes} />
         <Stack.Screen name="TelaLogin" component={TelaLogin} />
         <Stack.Screen name="TelaPerfilEstagiario" component={TelaPerfilEstagiario} />
-        <Stack.Screen name="TelaAlteracaoLogin" component={TelaAlteracaoLogin} /> {/* Adicionada */}
-        <Stack.Screen name="TelaCadastro" component={TelaCadastro} /> {/* Adicionada */}
+        <Stack.Screen name="TelaCadastro" component={TelaCadastro}/>
+        <Stack.Screen name="TelaAlteracaoLogin" component={TelaAlteracaoLogin}/>
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
