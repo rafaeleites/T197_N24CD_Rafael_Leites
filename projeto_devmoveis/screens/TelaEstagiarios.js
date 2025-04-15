@@ -2,24 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
-const TelaPerfilEstagiarios = () => {
+const TelaRegistro = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
 
   useEffect(() => {
     const db = getDatabase();
-    const infoRef = ref(db, 'info/informacoes');
+    const cargaRef = ref(db, 'estagiarios/cargaHoraria');
 
-    const unsubscribe = onValue(infoRef, (snapshot) => {
+    const unsubscribe = onValue(cargaRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const listaFuncionarios = Object.entries(data).map(([uid, dados]) => ({
           uid,
           nome: dados.nome,
-          dataContratacao: dados.dataContratacao,
-          instituicaoEnsino: dados.instituicaoEnsino,
-          curso: dados.curso,
-          semestre: dados.semestre,
+          registros: dados.registros || {}
         }));
         setFuncionarios(listaFuncionarios);
       } else {
@@ -33,11 +30,41 @@ const TelaPerfilEstagiarios = () => {
   const toggleExpandido = (uid) => {
     setExpandido((prev) => ({
       ...prev,
-      [uid]: !prev[uid],
+      [uid]: !prev[uid]
     }));
   };
 
+  const formatarData = (data) => {
+    const partes = data.split('-'); // espera 'YYYY-MM-DD'
+    if (partes.length === 3) {
+      const [ano, mes, dia] = partes;
+      return `${dia}/${mes}/${ano.slice(2)}`;
+    }
+    return data;
+  };
+
+  const analisarCargaHoraria = (registros) => {
+    const diasTrabalhados = Object.keys(registros).length;
+    const horasTrabalhadas = Object.values(registros).reduce((total, info) => {
+      return total + (parseFloat(info.totalHoras) || 0);
+    }, 0);
+    const cargaPrevista = diasTrabalhados * 6;
+    const diferenca = horasTrabalhadas - cargaPrevista;
+
+    return {
+      diasTrabalhados,
+      horasTrabalhadas,
+      cargaPrevista,
+      diferenca
+    };
+  };
+
   const renderItem = ({ item }) => {
+    const { diasTrabalhados, horasTrabalhadas, cargaPrevista, diferenca } = analisarCargaHoraria(item.registros);
+
+    // Cores para déficit ou excesso
+    const corDiferenca = diferenca < 0 ? 'red' : 'green';
+
     return (
       <View style={styles.card}>
         <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
@@ -46,12 +73,26 @@ const TelaPerfilEstagiarios = () => {
           </Text>
         </TouchableOpacity>
 
+        <View style={styles.analise}>
+          <Text>Dias trabalhados: {diasTrabalhados}</Text>
+          <Text>Carga prevista: {cargaPrevista}h</Text>
+          <Text>Horas trabalhadas: {horasTrabalhadas.toFixed(2)}h</Text>
+          <Text style={{ color: corDiferenca }}>
+            {diferenca < 0 ? `Déficit: ${Math.abs(diferenca).toFixed(2)}h` : `Excesso: +${diferenca.toFixed(2)}h`}
+          </Text>
+        </View>
+
         {expandido[item.uid] && (
-          <View style={styles.analise}>
-            <Text>Data de Contratação: {item.dataContratacao}</Text>
-            <Text>Instituição de Ensino: {item.instituicaoEnsino}</Text>
-            <Text>Curso: {item.curso}</Text>
-            <Text>Semestre: {item.semestre}</Text>
+          <View style={styles.registros}>
+            {Object.entries(item.registros).map(([data, info]) => (
+              <View key={data} style={styles.registro}>
+                <Text style={styles.data}>{formatarData(data)}</Text>
+                <Text>Entrada: {info.entrada || 'N/A'}</Text>
+                <Text>Saída: {info.saida || 'N/A'}</Text>
+                <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
+                <Text>Total: {info.totalHoras || 0}h</Text>
+              </View>
+            ))}
           </View>
         )}
       </View>
@@ -65,7 +106,7 @@ const TelaPerfilEstagiarios = () => {
         keyExtractor={(item) => item.uid}
         renderItem={renderItem}
         contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhum funcionário encontrado</Text>}
+        ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
       />
     </View>
   );
@@ -100,10 +141,25 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   analise: {
-    marginTop: 10,
+    marginBottom: 10,
     padding: 10,
     backgroundColor: '#eef6ff',
     borderRadius: 8,
+  },
+  registros: {
+    marginTop: 10,
+  },
+  registro: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  data: {
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   vazio: {
     fontStyle: 'italic',
@@ -113,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TelaPerfilEstagiarios;
+export default TelaRegistro;
