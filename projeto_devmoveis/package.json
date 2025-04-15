@@ -11,7 +11,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "*",
     "@react-navigation/native-stack": "*",
-    "expo": "~52.0.43",
+    "expo": "~52.0.46",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.6.0",
     "react": "18.3.1",
