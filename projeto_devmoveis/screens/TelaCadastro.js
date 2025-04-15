@@ -34,13 +34,13 @@ function TelaCadastro() {
 
       console.log("✅ Usuário criado com UID:", user.uid);
 
-      // Salva os dados no Realtime Database
-      await set(ref(db, 'usuarios/' + user.uid), {
+      // Salva os dados no nó "administradores" no Realtime Database
+      await set(ref(db, 'administradores/' + user.uid), {
         nome: nome,
         email: email
       })
       .then(() => {
-        console.log("✅ Dados salvos no Realtime Database.");
+        console.log("✅ Dados salvos no Realtime Database no nó 'administradores'.");
 
         // Alerta com navegação após confirmação
         Alert.alert("Sucesso", "Cadastro realizado com sucesso!", [
@@ -114,8 +114,6 @@ function TelaCadastro() {
       <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
-
-      
     </View>
   );
 }
