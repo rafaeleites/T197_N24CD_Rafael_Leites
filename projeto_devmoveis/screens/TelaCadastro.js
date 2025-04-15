@@ -28,33 +28,39 @@ function TelaCadastro() {
       const auth = getAuth();
       const db = getDatabase();
 
+      console.log("Iniciando cadastro...");
       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const user = userCredential.user;
 
       console.log("✅ Usuário criado com UID:", user.uid);
 
-      // Alerta para confirmar que criação foi bem-sucedida
-      Alert.alert("Parabéns!", "Usuário cadastrado com sucesso.");
-
+      // Salva os dados no Realtime Database
       await set(ref(db, 'usuarios/' + user.uid), {
         nome: nome,
         email: email
       })
       .then(() => {
         console.log("✅ Dados salvos no Realtime Database.");
-        Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+
+        // Alerta com navegação após confirmação
+        Alert.alert("Sucesso", "Cadastro realizado com sucesso!", [
+          {
+            text: "OK",
+            onPress: () => {
+              console.log("Navegando para TelaLogin...");
+              navigation.navigate('TelaLogin'); // Navega para a tela de login
+            },
+          },
+        ]);
 
         // Limpa os campos após sucesso
         setNome('');
         setEmail('');
         setSenha('');
         setConfirmaSenha('');
-
-        // Navega para a tela de login
-        navigation.navigate('Login');
       })
       .catch((error) => {
-        console.error("❌ Erro ao salvar dados:", error);
+        console.error("❌ Erro ao salvar dados no Firebase:", error);
         Alert.alert("Erro", "Erro ao salvar no banco.");
       });
 
@@ -108,6 +114,8 @@ function TelaCadastro() {
       <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
         <Text style={styles.textoBotao}>Cadastrar</Text>
       </TouchableOpacity>
+
+      
     </View>
   );
 }
