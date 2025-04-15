@@ -1,173 +1,172 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import { useEffect, useState } from 'react';
 
-const cor1 = '#000000' //preto
-const cor2 = "#FFFFFF" //dourado
-
-
-export default function TelaEstagiarios() {
-  const [estagiarios, setEstagiarios] = useState([]);
-  const navigation = useNavigation();
+const TelaEstagiarios = () => {
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [expandido, setExpandido] = useState({});
 
   useEffect(() => {
     const db = getDatabase();
-    const estagiariosRef = ref(db, 'EstagiariosTeste');
+    const cargaRef = ref(db, 'estagiarios/cargaHoraria');
 
-    onValue(estagiariosRef, (snapshot) => {
+    const unsubscribe = onValue(cargaRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("Dados recebidos do Firebase:", data); // <--- TESTE
       if (data) {
-        const lista = Object.entries(data).map(([id, info]) => ({
-          id,
-          ...info,
+        const listaFuncionarios = Object.entries(data).map(([uid, dados]) => ({
+          uid,
+          nome: dados.nome,
+          registros: dados.registros || {}
         }));
-        setEstagiarios(lista);
+        setFuncionarios(listaFuncionarios);
+      } else {
+        setFuncionarios([]);
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('TelaPerfilEstagiario', { estagiario: item })}
-      style={styles.card}
-    >
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.nome}</Text>
-        <Text style={styles.email}>{item.email}</Text>
-        <Text style={styles.carga}>Carga Horária: {item.cargaHoraria} horas</Text>
+  const toggleExpandido = (uid) => {
+    setExpandido((prev) => ({
+      ...prev,
+      [uid]: !prev[uid]
+    }));
+  };
+
+  const formatarData = (data) => {
+    const partes = data.split('-'); // espera 'YYYY-MM-DD'
+    if (partes.length === 3) {
+      const [ano, mes, dia] = partes;
+      return `${dia}/${mes}/${ano.slice(2)}`;
+    }
+    return data;
+  };
+
+  const analisarCargaHoraria = (registros) => {
+    const diasTrabalhados = Object.keys(registros).length;
+    const horasTrabalhadas = Object.values(registros).reduce((total, info) => {
+      return total + (parseFloat(info.totalHoras) || 0);
+    }, 0);
+    const cargaPrevista = diasTrabalhados * 6;
+    const diferenca = horasTrabalhadas - cargaPrevista;
+
+    return {
+      diasTrabalhados,
+      horasTrabalhadas,
+      cargaPrevista,
+      diferenca
+    };
+  };
+
+  const renderItem = ({ item }) => {
+    const { diasTrabalhados, horasTrabalhadas, cargaPrevista, diferenca } = analisarCargaHoraria(item.registros);
+
+    // Cores para déficit ou excesso
+    const corDiferenca = diferenca < 0 ? 'red' : 'green';
+
+    return (
+      <View style={styles.card}>
+        <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
+          <Text style={styles.nome}>
+            {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
+          </Text>
+        </TouchableOpacity>
+
+        <View style={styles.analise}>
+          <Text>Dias trabalhados: {diasTrabalhados}</Text>
+          <Text>Carga prevista: {cargaPrevista}h</Text>
+          <Text>Horas trabalhadas: {horasTrabalhadas.toFixed(2)}h</Text>
+          <Text style={{ color: corDiferenca }}>
+            {diferenca < 0 ? `Déficit: ${Math.abs(diferenca).toFixed(2)}h` : `Excesso: +${diferenca.toFixed(2)}h`}
+          </Text>
+        </View>
+
+        {expandido[item.uid] && (
+          <View style={styles.registros}>
+            {Object.entries(item.registros).map(([data, info]) => (
+              <View key={data} style={styles.registro}>
+                <Text style={styles.data}>{formatarData(data)}</Text>
+                <Text>Entrada: {info.entrada || 'N/A'}</Text>
+                <Text>Saída: {info.saida || 'N/A'}</Text>
+                <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
+                <Text>Total: {info.totalHoras || 0}h</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
-    </TouchableOpacity>
-  );
- 
+    );
+  };
+
   return (
     <View style={styles.container}>
-      {/* Título */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Estagiários</Text>
-      </View>
-
-      {/* Lista */}
       <FlatList
-        data={estagiarios}
+        data={funcionarios}
+        keyExtractor={(item) => item.uid}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.scrollContainer}
+        contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
+        ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
       />
-      
-
-      {/* Rodapé com ícones */} 
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />{' '}
-          
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
-          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />{' '}
-          
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TelaEstagiarios')}>
-          <MaterialCommunityIcons name="account-group" size={30} color="#000" />{' '}
-          
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
-          <MaterialCommunityIcons
-            name="account-circle-outline" //Foto de perfil
-            size={30}
-            color="#000"
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
-}
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: cor1,
-      paddingTop: 40,
-    },
-    header: {
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    title: {
-      fontSize: 26,
-      fontWeight: 'bold',
-      color: cor2,
-      backgroundColor: '#fff',
-      paddingHorizontal: 30,
-      paddingVertical: 10,
-      borderRadius: 15,
-    },
-    scrollContainer: {
-      paddingHorizontal: 20,
-      paddingBottom: 80,
-    },
-    card: {
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      borderRadius: 15,
-      padding: 15,
-      marginBottom: 20,
-      alignItems: 'center',
-      elevation: 5,
-    },
-    avatar: {
-      width: 50,
-      height: 50,
-      marginRight: 15,
-      borderRadius: 25,
-    },
-    info: {
-      flex: 1,
-    },
-    name: {
-      fontWeight: 'bold',
-      fontSize: 16,
-    },
-    setor: {
-      fontSize: 14,
-      marginTop: 4,
-    },
-    universidade: {
-      fontSize: 13,
-      color: '#555',
-      marginTop: 2,
-    },
-    footer: {
-      backgroundColor: 'white',
-      position: 'absolute',
-      bottom: 10,
-      left: 30,
-      right: 30,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: 30,
-      paddingVertical: 15,
-      paddingTop: 15,
-      borderRadius: 15,
-    },
-    email: {
-      fontSize: 14,
-      marginTop: 2,
-      color: '#444',
-    },
-    carga: {
-      fontSize: 13,
-      marginTop: 2,
-      color: '#666',
-    },
-  });
+};
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+    paddingHorizontal: 10,
+    paddingTop: 20,
+  },
+  emptyContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  nome: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  seta: {
+    fontSize: 16,
+    color: '#666',
+  },
+  analise: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#eef6ff',
+    borderRadius: 8,
+  },
+  registros: {
+    marginTop: 10,
+  },
+  registro: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  data: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  vazio: {
+    fontStyle: 'italic',
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});
+
+export default TelaEstagiarios;
