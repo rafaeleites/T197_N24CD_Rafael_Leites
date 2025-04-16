@@ -6,7 +6,7 @@ function TelaAlteracaoLogin() {
   const navigation = useNavigation();
 
   const handleAlterarSenha = () => {
-    // Lógica para alterar senha (implementar futuramente)
+    // Lógica para alterar senhaa (implementar futuramente)
     console.log("Alterar Senha clicado");
   };
 
