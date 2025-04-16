@@ -32,7 +32,10 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Justificativas</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaPerfilEstagiario')}
+        >
           <MaterialCommunityIcons
             name="account-group-outline"
             size={32}
@@ -41,7 +44,10 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Lista de Estagiários</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaEstagiarios')}
+        >
           <MaterialCommunityIcons name="history" size={32} color="f0dc82" />
           <Text style={styles.buttonText}>Histórico de registros</Text>
         </TouchableOpacity>
@@ -54,32 +60,37 @@ function TelaRecursos() {
           />
           <Text style={styles.buttonText}>Controle de carga horária</Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Rodapé com ícones - COPIAR COMO MODELO DE RODAPÉ */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
-          {/* Engrenagem */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaRecursos')}
+        >
+          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
+          <Text style={styles.buttonText}>Moderador</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
-          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
-          {/* Comentários */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaRequisicoes')}
+        >
+          <MaterialCommunityIcons
+            name="comment-text-multiple"
+            size={32}
+            color="f0dc82"
+          />
+          <Text style={styles.buttonText}>Requisições</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('TelaEstagiarios')}>
-          <MaterialCommunityIcons name="account-group" size={30} color="#000" />
-          {/* Pessoas */}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaPerfil')}
+        >
           <MaterialCommunityIcons
             name="account-circle-outline"
-            size={30}
-            color="#000"
+            size={32}
+            color="f0dc82"
           />
-          {/* Foto de perfil */}
+          <Text style={styles.buttonText}>Perfil</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -128,19 +139,6 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
     marginTop: 10,
-  },
-  footer: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 10,
-    left: 30,
-    right: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    paddingTop: 15,
-    borderRadius: 15,
   },
 });
 
