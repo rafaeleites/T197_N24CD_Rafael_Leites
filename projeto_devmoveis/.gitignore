@@ -34,3 +34,10 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Git
+.expo-shared/
+.vscode/
+*.log
+.cache/
+
