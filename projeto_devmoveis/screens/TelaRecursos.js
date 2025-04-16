@@ -16,15 +16,6 @@ function TelaRecursos() {
 
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons
-            name="bell-outline"
-            size={32}
-            color="f0dc82"
-          />
-          <Text style={styles.buttonText}>Notificações</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons
             name="note-edit-outline"
             size={32}
             color="f0dc82"
@@ -80,17 +71,24 @@ function TelaRecursos() {
           />
           <Text style={styles.buttonText}>Requisições</Text>
         </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('TelaPerfil')}
-        >
+      {/* Rodapé com ícones */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
+          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacoes')}>
+          <MaterialCommunityIcons name="bell-outline" size={30} color="#000" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
             name="account-circle-outline"
-            size={32}
-            color="f0dc82"
+            size={30}
+            color="#000"
           />
-          <Text style={styles.buttonText}>Perfil</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -139,6 +137,18 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
     marginTop: 10,
+  },
+  footer: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 10,
+    left: 30,
+    right: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 15,
   },
 });
 
