@@ -6,13 +6,8 @@ function TelaAlteracaoLogin() {
   const navigation = useNavigation();
 
   const handleAlterarSenha = () => {
-    // Lógica para alterar senhaa (implementar futuramente)
+    // Lógica para alterar senha (implementar futuramente)
     console.log("Alterar Senha clicado");
-  };
-
-  const handleAlterarEmail = () => {
-    // Lógica para alterar email (implementar futuramente)
-    console.log("Alterar Email clicado");
   };
 
   return (
@@ -20,9 +15,6 @@ function TelaAlteracaoLogin() {
       <Text style={styles.title}>Alterar Dados de Acesso</Text>
       <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleAlterarSenha')}>
         <Text style={styles.textoBotao}>Alterar Senha</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botao} onPress={() => navigation.navigate('handleAlterarEmail')}>
-        <Text style={styles.textoBotao}>Alterar Email</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.botaoVoltar}
