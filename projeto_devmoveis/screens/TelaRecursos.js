@@ -14,15 +14,6 @@ function TelaRecursos() {
       <Text style={styles.title}>Recursos</Text>
       <View style={styles.grid}>
 
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons
-            name="note-edit-outline"
-            size={32}
-            color="f0dc82"
-          />
-          <Text style={styles.buttonText}>Justificativas</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('TelaPerfilEstagiario')}
@@ -43,6 +34,14 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Histórico de registros</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaRecursos')}
+        >
+          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
+          <Text style={styles.buttonText}>Moderador</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons
             name="clock-outline"
@@ -52,12 +51,13 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Controle de carga horária</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('TelaRecursos')}
-        >
-          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
-          <Text style={styles.buttonText}>Moderador</Text>
+        <TouchableOpacity style={styles.button}>
+          <MaterialCommunityIcons
+            name="note-edit-outline"
+            size={32}
+            color="f0dc82"
+          />
+          <Text style={styles.buttonText}>Justificativas</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
