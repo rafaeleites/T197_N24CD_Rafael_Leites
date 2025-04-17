@@ -79,7 +79,7 @@ function TelaRecursos() {
           <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacoes')}>
+        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacao')}>
           <MaterialCommunityIcons name="bell-outline" size={30} color="#000" />
         </TouchableOpacity>
 
