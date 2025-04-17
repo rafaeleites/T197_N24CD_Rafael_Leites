@@ -44,11 +44,11 @@ function TelaRecursos() {
 
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons
-            name="clock-outline"
+            name="information-outline"
             size={32}
             color="f0dc82"
           />
-          <Text style={styles.buttonText}>Controle de carga horária</Text>
+          <Text style={styles.buttonText}>Informações</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button}>
