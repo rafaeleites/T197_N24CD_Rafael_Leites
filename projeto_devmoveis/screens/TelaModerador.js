@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { getDatabase, ref, onValue, update } from 'firebase/database';
 
 const TelaModerador = () => {
@@ -9,6 +18,8 @@ const TelaModerador = () => {
   const [novoEntrada, setNovoEntrada] = useState('');
   const [novoSaida, setNovoSaida] = useState('');
   const [novoPausa, setNovoPausa] = useState('');
+  const [mesSelecionado, setMesSelecionado] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
     const db = getDatabase();
@@ -20,12 +31,13 @@ const TelaModerador = () => {
         const listaFuncionarios = Object.entries(data).map(([uid, dados]) => ({
           uid,
           nome: dados.nome,
-          registros: dados.registros || {}
+          registros: dados.registros || {},
         }));
         setFuncionarios(listaFuncionarios);
       } else {
         setFuncionarios([]);
       }
+      setCarregando(false);
     });
 
     return () => unsubscribe();
@@ -34,7 +46,7 @@ const TelaModerador = () => {
   const toggleExpandido = (key) => {
     setExpandido((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
@@ -121,64 +133,73 @@ const TelaModerador = () => {
 
         {expandido[item.uid] && (
           <View style={styles.registros}>
-            {Object.entries(item.registros).map(([data, info]) => (
-              <View key={data} style={styles.registro}>
-                <TouchableOpacity onPress={() => toggleExpandido(data)}>
-                  <Text style={styles.data}>{formatarData(data)}</Text>
-                </TouchableOpacity>
+            {Object.entries(item.registros)
+              .filter(([data]) => {
+                if (!mesSelecionado) return true;
+                const mes = data.split('-')[1];
+                return mes === mesSelecionado;
+              })
+              .map(([data, info]) => (
+                <View key={data} style={styles.registro}>
+                  <TouchableOpacity onPress={() => toggleExpandido(`${item.uid}_${data}`)}>
+                    <Text style={styles.data}>{formatarData(data)}</Text>
+                  </TouchableOpacity>
 
-                {expandido[data] && (
-                  <>
-                    {editando === data ? (
-                      <>
-                        <TextInput
-                          style={styles.input}
-                          value={novoEntrada}
-                          onChangeText={setNovoEntrada}
-                          placeholder="Nova entrada"
-                        />
-                        <TextInput
-                          style={styles.input}
-                          value={novoSaida}
-                          onChangeText={setNovoSaida}
-                          placeholder="Nova saída"
-                        />
-                        <TextInput
-                          style={styles.input}
-                          value={novoPausa}
-                          onChangeText={setNovoPausa}
-                          placeholder="Novas pausas (separadas por vírgula)"
-                        />
-                        <TouchableOpacity
-                          style={styles.botaoSalvar}
-                          onPress={() => salvarEdicao(item.uid, data)}
-                        >
-                          <Text style={styles.textoBotao}>Salvar</Text>
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <>
-                        <Text>Entrada: {info.entrada || 'N/A'}</Text>
-                        <Text>Saída: {info.saida || 'N/A'}</Text>
-                        <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                        <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
-                        <TouchableOpacity
-                          style={styles.botaoEditar}
-                          onPress={() => {
-                            setEditando(data);
-                            setNovoEntrada(info.entrada || '');
-                            setNovoSaida(info.saida || '');
-                            setNovoPausa(info.pausas ? info.pausas.join(', ') : '');
-                          }}
-                        >
-                          <Text style={styles.textoBotao}>Editar</Text>
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </>
-                )}
-              </View>
-            ))}
+                  {expandido[`${item.uid}_${data}`] && (
+                    <>
+                      {editando === data ? (
+                        <>
+                          <TextInput
+                            style={styles.input}
+                            value={novoEntrada}
+                            onChangeText={setNovoEntrada}
+                            placeholder="Nova entrada"
+                            placeholderTextColor="#999"
+                          />
+                          <TextInput
+                            style={styles.input}
+                            value={novoSaida}
+                            onChangeText={setNovoSaida}
+                            placeholder="Nova saída"
+                            placeholderTextColor="#999"
+                          />
+                          <TextInput
+                            style={styles.input}
+                            value={novoPausa}
+                            onChangeText={setNovoPausa}
+                            placeholder="Novas pausas (separadas por vírgula)"
+                            placeholderTextColor="#999"
+                          />
+                          <TouchableOpacity
+                            style={styles.botaoSalvar}
+                            onPress={() => salvarEdicao(item.uid, data)}
+                          >
+                            <Text style={styles.textoBotao}>Salvar</Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <>
+                          <Text>Entrada: {info.entrada || 'N/A'}</Text>
+                          <Text>Saída: {info.saida || 'N/A'}</Text>
+                          <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
+                          <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
+                          <TouchableOpacity
+                            style={styles.botaoEditar}
+                            onPress={() => {
+                              setEditando(data);
+                              setNovoEntrada(info.entrada || '');
+                              setNovoSaida(info.saida || '');
+                              setNovoPausa(info.pausas ? info.pausas.join(', ') : '');
+                            }}
+                          >
+                            <Text style={styles.textoBotao}>Editar</Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
+                    </>
+                  )}
+                </View>
+              ))}
           </View>
         )}
       </View>
@@ -187,13 +208,30 @@ const TelaModerador = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={funcionarios}
-        keyExtractor={(item) => item.uid}
-        renderItem={renderItem}
-        contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
-      />
+      <View style={styles.filtroContainer}>
+        <Text style={styles.labelFiltro}>Filtrar por mês:</Text>
+        <TextInput
+          style={styles.inputFiltro}
+          value={mesSelecionado || ''}
+          onChangeText={setMesSelecionado}
+          placeholder="MM"
+          placeholderTextColor="#999"
+          keyboardType="numeric"
+          maxLength={2}
+        />
+      </View>
+
+      {carregando ? (
+        <ActivityIndicator size="large" color="#1e90ff" />
+      ) : (
+        <FlatList
+          data={funcionarios}
+          keyExtractor={(item) => item.uid}
+          renderItem={renderItem}
+          contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
+          ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
+        />
+      )}
     </View>
   );
 };
@@ -264,6 +302,23 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     marginTop: 20,
+  },
+  filtroContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  labelFiltro: {
+    marginRight: 10,
+    fontWeight: 'bold',
+  },
+  inputFiltro: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 5,
+    width: 80,
+    backgroundColor: '#fff',
   },
 });
 
