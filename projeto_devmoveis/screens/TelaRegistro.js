@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Importação do Picker
+import { Picker } from '@react-native-picker/picker';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 const TelaRegistro = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
-  const [filtroMes, setFiltroMes] = useState('7dias'); // Estado inicial para "Últimos 7 dias"
+  const [filtroMes, setFiltroMes] = useState('7dias');
 
   useEffect(() => {
     const db = getDatabase();
@@ -18,7 +18,7 @@ const TelaRegistro = () => {
         const listaFuncionarios = Object.entries(data).map(([uid, dados]) => ({
           uid,
           nome: dados.nome,
-          registros: dados.registros || {}
+          registros: dados.registros || {},
         }));
         setFuncionarios(listaFuncionarios);
       } else {
@@ -32,12 +32,12 @@ const TelaRegistro = () => {
   const toggleExpandido = (uid) => {
     setExpandido((prev) => ({
       ...prev,
-      [uid]: !prev[uid]
+      [uid]: !prev[uid],
     }));
   };
 
   const formatarData = (data) => {
-    const partes = data.split('-'); // espera 'YYYY-MM-DD'
+    const partes = data.split('-');
     if (partes.length === 3) {
       const [ano, mes, dia] = partes;
       return `${dia}/${mes}/${ano.slice(2)}`;
@@ -45,73 +45,68 @@ const TelaRegistro = () => {
     return data;
   };
 
-  const calcularTotalHoras = (entrada, saida, pausas) => {
-    if (!entrada || !saida) return '0h0min';
+  const calcularMinutosTotais = (entrada, saida, pausas) => {
+    if (!entrada || !saida) return 0;
 
     try {
-      const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
-      const [horaSaida, minutoSaida] = saida.split(':').map(Number);
-
-      const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
-      const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
-
-      let totalMinutos = (fim - inicio) / (1000 * 60);
+      const [hEntrada, mEntrada] = entrada.split(':').map(Number);
+      const [hSaida, mSaida] = saida.split(':').map(Number);
+      const inicio = new Date(0, 0, 0, hEntrada, mEntrada);
+      const fim = new Date(0, 0, 0, hSaida, mSaida);
+      let totalMinutos = (fim - inicio) / 60000;
 
       if (pausas && pausas.length > 0) {
-        const totalPausasMinutos = pausas.reduce((total, pausa) => {
-          const [inicioPausa, fimPausa] = pausa.split('-');
-          const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
-          const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
-
-          const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
-          const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
-
-          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60);
+        const pausaMinutos = pausas.reduce((total, pausa) => {
+          const [inicioP, fimP] = pausa.split('-');
+          const [hIni, mIni] = inicioP.split(':').map(Number);
+          const [hFim, mFim] = fimP.split(':').map(Number);
+          const iniDate = new Date(0, 0, 0, hIni, mIni);
+          const fimDate = new Date(0, 0, 0, hFim, mFim);
+          return total + (fimDate - iniDate) / 60000;
         }, 0);
-
-        totalMinutos -= totalPausasMinutos;
+        totalMinutos -= pausaMinutos;
       }
 
-      totalMinutos = Math.max(totalMinutos, 0);
-
-      const horas = Math.floor(totalMinutos / 60);
-      const minutos = Math.round(totalMinutos % 60);
-
-      return `${horas}h${minutos}min`;
+      return Math.max(totalMinutos, 0);
     } catch (error) {
-      console.error('Erro ao calcular total de horas:', error);
-      return '0h0min';
+      return 0;
     }
   };
 
-  const filtrarPorMes = (registros, mes) => {
-    if (!mes) return Object.entries(registros); // Retorna todos os registros se nenhum mês for selecionado
+  const minutosParaTexto = (minutos) => {
+    const h = Math.floor(minutos / 60);
+    const m = Math.round(minutos % 60);
+    return `${h}h${m}min`;
+  };
 
+  const filtrarPorMes = (registros, mes) => {
+    if (!mes) return Object.entries(registros);
     return Object.entries(registros).filter(([data]) => {
-      const [ano, mesRegistro] = data.split('-');
+      const [_, mesRegistro] = data.split('-');
       return mesRegistro === mes;
     });
   };
 
   const obterUltimos7Dias = (registros) => {
-    // Converte os registros em um array, ordena pela data e seleciona os últimos 7
     return Object.entries(registros)
-      .sort(([dataA], [dataB]) => {
-        const [anoA, mesA, diaA] = dataA.split('-').map(Number);
-        const [anoB, mesB, diaB] = dataB.split('-').map(Number);
-        const dataRegistroA = new Date(anoA, mesA - 1, diaA);
-        const dataRegistroB = new Date(anoB, mesB - 1, diaB);
-        return dataRegistroB - dataRegistroA; // Ordena em ordem decrescente (mais recente primeiro)
-      })
-      .slice(0, 7); // Seleciona os últimos 7 registros
+      .sort(([a], [b]) => new Date(b) - new Date(a))
+      .slice(0, 7);
   };
 
   const renderItem = ({ item }) => {
-    // Verifica se o filtro é "7dias" ou um mês específico
     const registrosFiltrados =
       filtroMes === '7dias'
-        ? obterUltimos7Dias(item.registros) // Últimos 7 dias
-        : filtrarPorMes(item.registros, filtroMes); // Filtra por mês
+        ? obterUltimos7Dias(item.registros)
+        : filtrarPorMes(item.registros, filtroMes);
+
+    const totalMinutos = registrosFiltrados.reduce((soma, [_, info]) => {
+      return soma + calcularMinutosTotais(info.entrada, info.saida, info.pausas);
+    }, 0);
+
+    const diasTrabalhados = registrosFiltrados.length;
+    const minutosEsperados = diasTrabalhados * 5 * 60;
+    const diferenca = totalMinutos - minutosEsperados;
+    const corDiferenca = diferenca < 0 ? styles.faltando : styles.sobrando;
 
     return (
       <View style={styles.card}>
@@ -120,6 +115,21 @@ const TelaRegistro = () => {
             {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
           </Text>
         </TouchableOpacity>
+
+        <Text style={styles.info}>
+          Dias trabalhados: {diasTrabalhados}
+        </Text>
+        <Text style={styles.info}>
+          Carga horária esperada: {minutosParaTexto(minutosEsperados)}
+        </Text>
+        <Text style={styles.info}>
+          Carga horária realizada: {minutosParaTexto(totalMinutos)}
+        </Text>
+        <Text style={[styles.info, corDiferenca]}>
+          {diferenca < 0
+            ? `Faltando: ${minutosParaTexto(Math.abs(diferenca))}`
+            : `Sobrando: ${minutosParaTexto(diferenca)}`}
+        </Text>
 
         {expandido[item.uid] && (
           <View style={styles.registros}>
@@ -130,7 +140,7 @@ const TelaRegistro = () => {
                   <Text>Entrada: {info.entrada || 'N/A'}</Text>
                   <Text>Saída: {info.saida || 'N/A'}</Text>
                   <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                  <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
+                  <Text>Total: {minutosParaTexto(calcularMinutosTotais(info.entrada, info.saida, info.pausas))}</Text>
                 </View>
               ))
             ) : (
@@ -202,11 +212,21 @@ const styles = StyleSheet.create({
   nome: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   seta: {
     fontSize: 16,
     color: '#666',
+  },
+  info: {
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  faltando: {
+    color: 'red',
+  },
+  sobrando: {
+    color: 'green',
   },
   registros: {
     marginTop: 10,
