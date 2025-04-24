@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TelaRecursos from './screens/TelaRecursos';
-import TelaEstagiarios from './screens/TelaEstagiarios';
+import TelaRegistro from './screens/TelaRegistro';
 import TelaPerfil from './screens/TelaPerfil';
 import TelaRequisicoes from './screens/TelaRequisicoes';
 import TelaLogin from './screens/TelaLogin'; 
@@ -20,7 +20,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="TelaRecursos"> 
         <Stack.Screen name="TelaRecursos" component={TelaRecursos} />
-        <Stack.Screen name="TelaEstagiarios" component={TelaEstagiarios} />
+        <Stack.Screen name="TelaRegistro" component={TelaRegistro} />
         <Stack.Screen name="TelaPerfil" component={TelaPerfil} />
         <Stack.Screen name="TelaRequisicoes" component={TelaRequisicoes} />
         <Stack.Screen name="TelaLogin" component={TelaLogin} />

@@ -28,7 +28,7 @@ function TelaRecursos() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('TelaEstagiarios')}
+          onPress={() => navigation.navigate('TelaRegistro')}
         >
           <MaterialCommunityIcons name="history" size={32} color="f0dc82" />
           <Text style={styles.buttonText}>Histórico de registros</Text>
