@@ -44,64 +44,81 @@ const TelaRegistro = () => {
   };
 
   const calcularTotalHoras = (entrada, saida, pausas) => {
-    if (!entrada || !saida) return 0; // Se entrada ou saída estiverem ausentes, retorna 0
-  
+    if (!entrada || !saida) return '0h0min'; // Se entrada ou saída estiverem ausentes, retorna 0h0min
+
     try {
       // Converte entrada e saída para objetos Date
       const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
       const [horaSaida, minutoSaida] = saida.split(':').map(Number);
-  
+
       const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
       const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
-  
-      // Calcula a diferença em milissegundos e converte para horas
-      let totalHoras = (fim - inicio) / (1000 * 60 * 60);
-  
+
+      // Calcula a diferença em minutos
+      let totalMinutos = (fim - inicio) / (1000 * 60);
+
       // Subtrai o tempo total das pausas (se houver)
       if (pausas && pausas.length > 0) {
-        const totalPausas = pausas.reduce((total, pausa) => {
+        const totalPausasMinutos = pausas.reduce((total, pausa) => {
           const [inicioPausa, fimPausa] = pausa.split('-');
           const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
           const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
-  
+
           const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
           const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
-  
-          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60 * 60);
+
+          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60);
         }, 0);
-  
-        totalHoras -= totalPausas;
+
+        totalMinutos -= totalPausasMinutos;
       }
-  
-      return totalHoras > 0 ? totalHoras : 0; // Garante que o total não seja negativo
+
+      // Garante que o total não seja negativo
+      totalMinutos = Math.max(totalMinutos, 0);
+
+      // Converte minutos para horas e minutos
+      const horas = Math.floor(totalMinutos / 60);
+      const minutos = Math.round(totalMinutos % 60);
+
+      return `${horas}h${minutos}min`;
     } catch (error) {
       console.error('Erro ao calcular total de horas:', error);
-      return 0; // Retorna 0 em caso de erro
+      return '0h0min'; // Retorna 0h0min em caso de erro
     }
   };
-  
+
   const analisarCargaHoraria = (registros) => {
     const diasTrabalhados = Object.keys(registros).length;
-    const horasTrabalhadas = Object.values(registros).reduce((total, info) => {
-      const horas = calcularTotalHoras(info.entrada, info.saida, info.pausas);
-      return total + horas;
+    const totalMinutosTrabalhados = Object.values(registros).reduce((total, info) => {
+      const [horas, minutos] = calcularTotalHoras(info.entrada, info.saida, info.pausas)
+        .replace('h', ':')
+        .replace('min', '')
+        .split(':')
+        .map(Number);
+      return total + horas * 60 + minutos;
     }, 0);
-    const cargaPrevista = diasTrabalhados * 5; // Alterado para 5 horas por dia
-    const diferenca = horasTrabalhadas - cargaPrevista;
-  
+
+    const horasTrabalhadas = Math.floor(totalMinutosTrabalhados / 60);
+    const minutosTrabalhados = totalMinutosTrabalhados % 60;
+    const cargaPrevistaMinutos = diasTrabalhados * 5 * 60; // 5 horas por dia em minutos
+    const diferencaMinutos = totalMinutosTrabalhados - cargaPrevistaMinutos;
+
+    const diferencaHoras = Math.floor(Math.abs(diferencaMinutos) / 60);
+    const diferencaMinutosRestantes = Math.abs(diferencaMinutos) % 60;
+
     return {
       diasTrabalhados,
-      horasTrabalhadas: horasTrabalhadas || 0, // Garante que seja um número
-      cargaPrevista,
-      diferenca
+      horasTrabalhadas: `${horasTrabalhadas}h${minutosTrabalhados}min`,
+      cargaPrevista: `${Math.floor(cargaPrevistaMinutos / 60)}h${cargaPrevistaMinutos % 60}min`,
+      diferenca: diferencaMinutos < 0
+        ? `Déficit: ${diferencaHoras}h${diferencaMinutosRestantes}min`
+        : `Excesso: +${diferencaHoras}h${diferencaMinutosRestantes}min`,
+      corDiferenca: diferencaMinutos < 0 ? 'red' : 'green',
     };
   };
 
   const renderItem = ({ item }) => {
-    const { diasTrabalhados, horasTrabalhadas, cargaPrevista, diferenca } = analisarCargaHoraria(item.registros);
-
-    // Cores para déficit ou excesso
-    const corDiferenca = diferenca < 0 ? 'red' : 'green';
+    const { diasTrabalhados, horasTrabalhadas, cargaPrevista, diferenca, corDiferenca } = analisarCargaHoraria(item.registros);
 
     return (
       <View style={styles.card}>
@@ -113,11 +130,9 @@ const TelaRegistro = () => {
 
         <View style={styles.analise}>
           <Text>Dias trabalhados: {diasTrabalhados}</Text>
-          <Text>Carga prevista: {cargaPrevista}h</Text>
-          <Text>Horas trabalhadas: {horasTrabalhadas.toFixed(2)}h</Text>
-          <Text style={{ color: corDiferenca }}>
-            {diferenca < 0 ? `Déficit: ${Math.abs(diferenca).toFixed(2)}h` : `Excesso: +${diferenca.toFixed(2)}h`}
-          </Text>
+          <Text>Carga prevista: {cargaPrevista}</Text>
+          <Text>Horas trabalhadas: {horasTrabalhadas}</Text>
+          <Text style={{ color: corDiferenca }}>{diferenca}</Text>
         </View>
 
         {expandido[item.uid] && (
@@ -128,7 +143,7 @@ const TelaRegistro = () => {
                 <Text>Entrada: {info.entrada || 'N/A'}</Text>
                 <Text>Saída: {info.saida || 'N/A'}</Text>
                 <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}h</Text>
+                <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
               </View>
             ))}
           </View>

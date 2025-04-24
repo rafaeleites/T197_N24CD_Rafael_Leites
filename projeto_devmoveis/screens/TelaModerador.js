@@ -5,7 +5,7 @@ import { getDatabase, ref, onValue, update } from 'firebase/database';
 const TelaModerador = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
-  const [editando, setEditando] = useState(null); // Estado para rastrear o registro em edição
+  const [editando, setEditando] = useState(null);
   const [novoEntrada, setNovoEntrada] = useState('');
   const [novoSaida, setNovoSaida] = useState('');
   const [novoPausa, setNovoPausa] = useState('');
@@ -31,43 +31,50 @@ const TelaModerador = () => {
     return () => unsubscribe();
   }, []);
 
-  const toggleExpandido = (uid) => {
+  const toggleExpandido = (key) => {
     setExpandido((prev) => ({
       ...prev,
-      [uid]: !prev[uid]
+      [key]: !prev[key]
     }));
   };
 
   const calcularTotalHoras = (entrada, saida, pausas) => {
-    if (!entrada || !saida) return 0; // Se entrada ou saída estiverem ausentes, retorna 0
+    if (!entrada || !saida) return '0h0min';
 
-    // Converte entrada e saída para objetos Date
-    const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
-    const [horaSaida, minutoSaida] = saida.split(':').map(Number);
+    try {
+      const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
+      const [horaSaida, minutoSaida] = saida.split(':').map(Number);
 
-    const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
-    const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
+      const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
+      const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
 
-    // Calcula a diferença em milissegundos e converte para horas
-    let totalHoras = (fim - inicio) / (1000 * 60 * 60);
+      let totalMinutos = (fim - inicio) / (1000 * 60);
 
-    // Subtrai o tempo total das pausas (se houver)
-    if (pausas && pausas.length > 0) {
-      const totalPausas = pausas.reduce((total, pausa) => {
-        const [inicioPausa, fimPausa] = pausa.split('-');
-        const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
-        const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
+      if (pausas && pausas.length > 0) {
+        const totalPausasMinutos = pausas.reduce((total, pausa) => {
+          const [inicioPausa, fimPausa] = pausa.split('-');
+          const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
+          const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
 
-        const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
-        const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
+          const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
+          const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
 
-        return total + (fimPausaDate - inicioPausaDate) / (1000 * 60 * 60);
-      }, 0);
+          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60);
+        }, 0);
 
-      totalHoras -= totalPausas;
+        totalMinutos -= totalPausasMinutos;
+      }
+
+      totalMinutos = Math.max(totalMinutos, 0);
+
+      const horas = Math.floor(totalMinutos / 60);
+      const minutos = Math.round(totalMinutos % 60);
+
+      return `${horas}h${minutos}min`;
+    } catch (error) {
+      console.error('Erro ao calcular total de horas:', error);
+      return '0h0min';
     }
-
-    return totalHoras > 0 ? totalHoras.toFixed(2) : 0; // Garante que o total não seja negativo
   };
 
   const salvarEdicao = (uid, data) => {
@@ -83,7 +90,7 @@ const TelaModerador = () => {
     update(registroRef, atualizacoes)
       .then(() => {
         Alert.alert('Sucesso', 'Registro atualizado com sucesso!');
-        setEditando(null); // Finaliza a edição
+        setEditando(null);
         setNovoEntrada('');
         setNovoSaida('');
         setNovoPausa('');
@@ -92,6 +99,15 @@ const TelaModerador = () => {
         Alert.alert('Erro', 'Não foi possível atualizar o registro.');
         console.error(error);
       });
+  };
+
+  const formatarData = (data) => {
+    const partes = data.split('-');
+    if (partes.length === 3) {
+      const [ano, mes, dia] = partes;
+      return `${dia}-${mes}-${ano}`;
+    }
+    return data;
   };
 
   const renderItem = ({ item }) => {
@@ -107,51 +123,58 @@ const TelaModerador = () => {
           <View style={styles.registros}>
             {Object.entries(item.registros).map(([data, info]) => (
               <View key={data} style={styles.registro}>
-                <Text style={styles.data}>{data}</Text>
-                {editando === data ? (
+                <TouchableOpacity onPress={() => toggleExpandido(data)}>
+                  <Text style={styles.data}>{formatarData(data)}</Text>
+                </TouchableOpacity>
+
+                {expandido[data] && (
                   <>
-                    <TextInput
-                      style={styles.input}
-                      value={novoEntrada}
-                      onChangeText={setNovoEntrada}
-                      placeholder="Nova entrada"
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={novoSaida}
-                      onChangeText={setNovoSaida}
-                      placeholder="Nova saída"
-                    />
-                    <TextInput
-                      style={styles.input}
-                      value={novoPausa}
-                      onChangeText={setNovoPausa}
-                      placeholder="Novas pausas (separadas por vírgula)"
-                    />
-                    <TouchableOpacity
-                      style={styles.botaoSalvar}
-                      onPress={() => salvarEdicao(item.uid, data)}
-                    >
-                      <Text style={styles.textoBotao}>Salvar</Text>
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <Text>Entrada: {info.entrada || 'N/A'}</Text>
-                    <Text>Saída: {info.saida || 'N/A'}</Text>
-                    <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                    <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}h</Text>
-                    <TouchableOpacity
-                      style={styles.botaoEditar}
-                      onPress={() => {
-                        setEditando(data);
-                        setNovoEntrada(info.entrada || '');
-                        setNovoSaida(info.saida || '');
-                        setNovoPausa(info.pausas ? info.pausas.join(', ') : '');
-                      }}
-                    >
-                      <Text style={styles.textoBotao}>Editar</Text>
-                    </TouchableOpacity>
+                    {editando === data ? (
+                      <>
+                        <TextInput
+                          style={styles.input}
+                          value={novoEntrada}
+                          onChangeText={setNovoEntrada}
+                          placeholder="Nova entrada"
+                        />
+                        <TextInput
+                          style={styles.input}
+                          value={novoSaida}
+                          onChangeText={setNovoSaida}
+                          placeholder="Nova saída"
+                        />
+                        <TextInput
+                          style={styles.input}
+                          value={novoPausa}
+                          onChangeText={setNovoPausa}
+                          placeholder="Novas pausas (separadas por vírgula)"
+                        />
+                        <TouchableOpacity
+                          style={styles.botaoSalvar}
+                          onPress={() => salvarEdicao(item.uid, data)}
+                        >
+                          <Text style={styles.textoBotao}>Salvar</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text>Entrada: {info.entrada || 'N/A'}</Text>
+                        <Text>Saída: {info.saida || 'N/A'}</Text>
+                        <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
+                        <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
+                        <TouchableOpacity
+                          style={styles.botaoEditar}
+                          onPress={() => {
+                            setEditando(data);
+                            setNovoEntrada(info.entrada || '');
+                            setNovoSaida(info.saida || '');
+                            setNovoPausa(info.pausas ? info.pausas.join(', ') : '');
+                          }}
+                        >
+                          <Text style={styles.textoBotao}>Editar</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
                   </>
                 )}
               </View>
