@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Importação do Picker
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 const TelaRegistro = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
+  const [filtroMes, setFiltroMes] = useState('7dias'); // Estado inicial para "Últimos 7 dias"
 
   useEffect(() => {
     const db = getDatabase();
@@ -44,20 +46,17 @@ const TelaRegistro = () => {
   };
 
   const calcularTotalHoras = (entrada, saida, pausas) => {
-    if (!entrada || !saida) return '0h0min'; // Se entrada ou saída estiverem ausentes, retorna 0h0min
+    if (!entrada || !saida) return '0h0min';
 
     try {
-      // Converte entrada e saída para objetos Date
       const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
       const [horaSaida, minutoSaida] = saida.split(':').map(Number);
 
       const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
       const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
 
-      // Calcula a diferença em minutos
       let totalMinutos = (fim - inicio) / (1000 * 60);
 
-      // Subtrai o tempo total das pausas (se houver)
       if (pausas && pausas.length > 0) {
         const totalPausasMinutos = pausas.reduce((total, pausa) => {
           const [inicioPausa, fimPausa] = pausa.split('-');
@@ -73,52 +72,45 @@ const TelaRegistro = () => {
         totalMinutos -= totalPausasMinutos;
       }
 
-      // Garante que o total não seja negativo
       totalMinutos = Math.max(totalMinutos, 0);
 
-      // Converte minutos para horas e minutos
       const horas = Math.floor(totalMinutos / 60);
       const minutos = Math.round(totalMinutos % 60);
 
       return `${horas}h${minutos}min`;
     } catch (error) {
       console.error('Erro ao calcular total de horas:', error);
-      return '0h0min'; // Retorna 0h0min em caso de erro
+      return '0h0min';
     }
   };
 
-  const analisarCargaHoraria = (registros) => {
-    const diasTrabalhados = Object.keys(registros).length;
-    const totalMinutosTrabalhados = Object.values(registros).reduce((total, info) => {
-      const [horas, minutos] = calcularTotalHoras(info.entrada, info.saida, info.pausas)
-        .replace('h', ':')
-        .replace('min', '')
-        .split(':')
-        .map(Number);
-      return total + horas * 60 + minutos;
-    }, 0);
+  const filtrarPorMes = (registros, mes) => {
+    if (!mes) return Object.entries(registros); // Retorna todos os registros se nenhum mês for selecionado
 
-    const horasTrabalhadas = Math.floor(totalMinutosTrabalhados / 60);
-    const minutosTrabalhados = totalMinutosTrabalhados % 60;
-    const cargaPrevistaMinutos = diasTrabalhados * 5 * 60; // 5 horas por dia em minutos
-    const diferencaMinutos = totalMinutosTrabalhados - cargaPrevistaMinutos;
+    return Object.entries(registros).filter(([data]) => {
+      const [ano, mesRegistro] = data.split('-');
+      return mesRegistro === mes;
+    });
+  };
 
-    const diferencaHoras = Math.floor(Math.abs(diferencaMinutos) / 60);
-    const diferencaMinutosRestantes = Math.abs(diferencaMinutos) % 60;
+  const obterUltimos7Dias = (registros) => {
+    const hoje = new Date();
+    const seteDiasAtras = new Date();
+    seteDiasAtras.setDate(hoje.getDate() - 7);
 
-    return {
-      diasTrabalhados,
-      horasTrabalhadas: `${horasTrabalhadas}h${minutosTrabalhados}min`,
-      cargaPrevista: `${Math.floor(cargaPrevistaMinutos / 60)}h${cargaPrevistaMinutos % 60}min`,
-      diferenca: diferencaMinutos < 0
-        ? `Déficit: ${diferencaHoras}h${diferencaMinutosRestantes}min`
-        : `Excesso: +${diferencaHoras}h${diferencaMinutosRestantes}min`,
-      corDiferenca: diferencaMinutos < 0 ? 'red' : 'green',
-    };
+    return Object.entries(registros).filter(([data]) => {
+      const [ano, mes, dia] = data.split('-').map(Number); // Converte a data para números
+      const dataRegistro = new Date(ano, mes - 1, dia); // Cria um objeto Date
+      return dataRegistro >= seteDiasAtras && dataRegistro <= hoje; // Verifica se está nos últimos 7 dias
+    });
   };
 
   const renderItem = ({ item }) => {
-    const { diasTrabalhados, horasTrabalhadas, cargaPrevista, diferenca, corDiferenca } = analisarCargaHoraria(item.registros);
+    // Verifica se o filtro é "7dias" ou um mês específico
+    const registrosFiltrados =
+      filtroMes === '7dias'
+        ? obterUltimos7Dias(item.registros) // Últimos 7 dias
+        : filtrarPorMes(item.registros, filtroMes); // Filtra por mês
 
     return (
       <View style={styles.card}>
@@ -128,24 +120,21 @@ const TelaRegistro = () => {
           </Text>
         </TouchableOpacity>
 
-        <View style={styles.analise}>
-          <Text>Dias trabalhados: {diasTrabalhados}</Text>
-          <Text>Carga prevista: {cargaPrevista}</Text>
-          <Text>Horas trabalhadas: {horasTrabalhadas}</Text>
-          <Text style={{ color: corDiferenca }}>{diferenca}</Text>
-        </View>
-
         {expandido[item.uid] && (
           <View style={styles.registros}>
-            {Object.entries(item.registros).map(([data, info]) => (
-              <View key={data} style={styles.registro}>
-                <Text style={styles.data}>{formatarData(data)}</Text>
-                <Text>Entrada: {info.entrada || 'N/A'}</Text>
-                <Text>Saída: {info.saida || 'N/A'}</Text>
-                <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
-              </View>
-            ))}
+            {registrosFiltrados.length > 0 ? (
+              registrosFiltrados.map(([data, info]) => (
+                <View key={data} style={styles.registro}>
+                  <Text style={styles.data}>{formatarData(data)}</Text>
+                  <Text>Entrada: {info.entrada || 'N/A'}</Text>
+                  <Text>Saída: {info.saida || 'N/A'}</Text>
+                  <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
+                  <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.vazio}>Nenhum registro encontrado</Text>
+            )}
           </View>
         )}
       </View>
@@ -154,6 +143,26 @@ const TelaRegistro = () => {
 
   return (
     <View style={styles.container}>
+      <Picker
+        selectedValue={filtroMes}
+        onValueChange={(itemValue) => setFiltroMes(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Últimos 7 dias" value="7dias" />
+        <Picker.Item label="Janeiro" value="01" />
+        <Picker.Item label="Fevereiro" value="02" />
+        <Picker.Item label="Março" value="03" />
+        <Picker.Item label="Abril" value="04" />
+        <Picker.Item label="Maio" value="05" />
+        <Picker.Item label="Junho" value="06" />
+        <Picker.Item label="Julho" value="07" />
+        <Picker.Item label="Agosto" value="08" />
+        <Picker.Item label="Setembro" value="09" />
+        <Picker.Item label="Outubro" value="10" />
+        <Picker.Item label="Novembro" value="11" />
+        <Picker.Item label="Dezembro" value="12" />
+      </Picker>
+
       <FlatList
         data={funcionarios}
         keyExtractor={(item) => item.uid}
@@ -171,6 +180,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     paddingHorizontal: 10,
     paddingTop: 20,
+  },
+  picker: {
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 5,
   },
   emptyContainer: {
     flexGrow: 1,
@@ -192,12 +206,6 @@ const styles = StyleSheet.create({
   seta: {
     fontSize: 16,
     color: '#666',
-  },
-  analise: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#eef6ff',
-    borderRadius: 8,
   },
   registros: {
     marginTop: 10,
