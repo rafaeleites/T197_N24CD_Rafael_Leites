@@ -36,7 +36,7 @@ function TelaRecursos() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('TelaRecursos')}
+          onPress={() => navigation.navigate('TelaModerador')} // Alterado para TelaModerador
         >
           <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
           <Text style={styles.buttonText}>Moderador</Text>

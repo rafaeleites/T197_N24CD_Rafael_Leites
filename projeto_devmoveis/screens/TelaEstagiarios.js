@@ -43,17 +43,55 @@ const TelaRegistro = () => {
     return data;
   };
 
+  const calcularTotalHoras = (entrada, saida, pausas) => {
+    if (!entrada || !saida) return 0; // Se entrada ou saída estiverem ausentes, retorna 0
+  
+    try {
+      // Converte entrada e saída para objetos Date
+      const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
+      const [horaSaida, minutoSaida] = saida.split(':').map(Number);
+  
+      const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
+      const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
+  
+      // Calcula a diferença em milissegundos e converte para horas
+      let totalHoras = (fim - inicio) / (1000 * 60 * 60);
+  
+      // Subtrai o tempo total das pausas (se houver)
+      if (pausas && pausas.length > 0) {
+        const totalPausas = pausas.reduce((total, pausa) => {
+          const [inicioPausa, fimPausa] = pausa.split('-');
+          const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
+          const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
+  
+          const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
+          const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
+  
+          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60 * 60);
+        }, 0);
+  
+        totalHoras -= totalPausas;
+      }
+  
+      return totalHoras > 0 ? totalHoras : 0; // Garante que o total não seja negativo
+    } catch (error) {
+      console.error('Erro ao calcular total de horas:', error);
+      return 0; // Retorna 0 em caso de erro
+    }
+  };
+  
   const analisarCargaHoraria = (registros) => {
     const diasTrabalhados = Object.keys(registros).length;
     const horasTrabalhadas = Object.values(registros).reduce((total, info) => {
-      return total + (parseFloat(info.totalHoras) || 0);
+      const horas = calcularTotalHoras(info.entrada, info.saida, info.pausas);
+      return total + horas;
     }, 0);
-    const cargaPrevista = diasTrabalhados * 6;
+    const cargaPrevista = diasTrabalhados * 5; // Alterado para 5 horas por dia
     const diferenca = horasTrabalhadas - cargaPrevista;
-
+  
     return {
       diasTrabalhados,
-      horasTrabalhadas,
+      horasTrabalhadas: horasTrabalhadas || 0, // Garante que seja um número
       cargaPrevista,
       diferenca
     };
@@ -90,7 +128,7 @@ const TelaRegistro = () => {
                 <Text>Entrada: {info.entrada || 'N/A'}</Text>
                 <Text>Saída: {info.saida || 'N/A'}</Text>
                 <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                <Text>Total: {info.totalHoras || 0}h</Text>
+                <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}h</Text>
               </View>
             ))}
           </View>
