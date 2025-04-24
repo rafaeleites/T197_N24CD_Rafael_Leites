@@ -94,17 +94,17 @@ const TelaRegistro = () => {
   };
 
   const obterUltimos7Dias = (registros) => {
-  // Converte os registros em um array, ordena pela data e seleciona os últimos 7
-  return Object.entries(registros)
-    .sort(([dataA], [dataB]) => {
-      const [anoA, mesA, diaA] = dataA.split('-').map(Number);
-      const [anoB, mesB, diaB] = dataB.split('-').map(Number);
-      const dataRegistroA = new Date(anoA, mesA - 1, diaA);
-      const dataRegistroB = new Date(anoB, mesB - 1, diaB);
-      return dataRegistroB - dataRegistroA; // Ordena em ordem decrescente (mais recente primeiro)
-    })
-    .slice(0, 7); // Seleciona os últimos 7 registros
-};
+    // Converte os registros em um array, ordena pela data e seleciona os últimos 7
+    return Object.entries(registros)
+      .sort(([dataA], [dataB]) => {
+        const [anoA, mesA, diaA] = dataA.split('-').map(Number);
+        const [anoB, mesB, diaB] = dataB.split('-').map(Number);
+        const dataRegistroA = new Date(anoA, mesA - 1, diaA);
+        const dataRegistroB = new Date(anoB, mesB - 1, diaB);
+        return dataRegistroB - dataRegistroA; // Ordena em ordem decrescente (mais recente primeiro)
+      })
+      .slice(0, 7); // Seleciona os últimos 7 registros
+  };
 
   const renderItem = ({ item }) => {
     // Verifica se o filtro é "7dias" ou um mês específico
