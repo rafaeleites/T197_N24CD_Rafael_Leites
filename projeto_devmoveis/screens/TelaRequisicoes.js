@@ -4,10 +4,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native';
 
 const cor1 = '#000000'; //preto
-const cor2 = "#f0dc82"; //dourado
-const cor3 = '2F2F2F'; // Cinza
-const cor4 = 'F5F5DC'; // Bege
-const cor5 = 'B8860B'; // dourado2
+const cor2 = "black"; //dourado
+
 
 export default function TelaRequisicoes() {
   const navigation = useNavigation();
@@ -42,12 +40,9 @@ export default function TelaRequisicoes() {
         ))}
       </ScrollView>
 
-      {/* Rodapé com ícones */}
+      {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" /> 
-          {/* Engrenagem */}
-        </TouchableOpacity>
+      
         <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
           <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
           {/* Comentários */}

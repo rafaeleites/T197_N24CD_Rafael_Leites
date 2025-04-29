@@ -8,14 +8,16 @@ function TelaNotificacao() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.container_title}>
       <Text style={styles.title}>Configurações de Notificações</Text>
+      </View>
 
       <View style={styles.option}>
         <Text style={styles.optionText}>Notificar se algum estagiário atrasar</Text>
         <Switch
           value={notificacaoAtraso}
           onValueChange={setNotificacaoAtraso}
-          thumbColor={notificacaoAtraso ? '#f0dc82' : '#ccc'}
+          thumbColor={notificacaoAtraso ? '#ccc' : '#ccc'}
           trackColor={{ false: '#767577', true: '#f0dc82' }}
         />
       </View>
@@ -25,7 +27,7 @@ function TelaNotificacao() {
         <Switch
           value={notificacaoFalta}
           onValueChange={setNotificacaoFalta}
-          thumbColor={notificacaoFalta ? '#f0dc82' : '#ccc'}
+          thumbColor={notificacaoFalta ? '#ccc' : '#ccc'}
           trackColor={{ false: '#767577', true: '#f0dc82' }}
         />
       </View>
@@ -35,7 +37,7 @@ function TelaNotificacao() {
         <Switch
           value={notificacaoExtra}
           onValueChange={setNotificacaoExtra}
-          thumbColor={notificacaoExtra ? '#f0dc82' : '#ccc'}
+          thumbColor={notificacaoExtra ? '#ccc' : '#ccc'}
           trackColor={{ false: '#767577', true: '#f0dc82' }}
         />
       </View>
@@ -50,9 +52,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 35,
     fontWeight: 'bold',
-    color: '#f0dc82',
+    color: 'black',
     textAlign: 'center',
     marginBottom: 30,
   },
@@ -75,6 +77,12 @@ const styles = StyleSheet.create({
     color: '#000',
     flex: 1,
     marginRight: 10,
+  },
+  container_title: {
+    backgroundColor: 'white', // Fundo dourado
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
   },
 });
 

@@ -42,13 +42,13 @@ function TelaRecursos() {
           <Text style={styles.buttonText}>Moderador</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress = {() => navigation.navigate('TelaNotificacao')}>
           <MaterialCommunityIcons
-            name="information-outline"
+            name="bell"
             size={32}
             color="f0dc82"
           />
-          <Text style={styles.buttonText}>Informações</Text>
+          <Text style={styles.buttonText}>Notificações</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button}>
@@ -73,19 +73,20 @@ function TelaRecursos() {
         </TouchableOpacity>
       </View>
 
-      {/* Rodapé com ícones */}
+       {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
+      
+        <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
+          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
+          {/* Comentários */}
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacao')}>
-          <MaterialCommunityIcons name="bell-outline" size={30} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('TelaPerfilEstagiario')}>
+          <MaterialCommunityIcons name="account-group" size={30} color="#000" />
+          {/* Pessoas */}
         </TouchableOpacity>
-
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
-            name="account-circle-outline"
+            name="account-circle-outline" //Foto de perfil
             size={30}
             color="#000"
           />

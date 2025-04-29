@@ -60,13 +60,22 @@ const TelaPerfilEstagiarios = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={funcionarios}
-        keyExtractor={(item) => item.uid}
-        renderItem={renderItem}
-        contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhum funcionário encontrado</Text>}
-      />
+      <View>
+        <Text style={styles.titulo}>Lista de Estagiários</Text>
+        <Text style={styles.seta}>Clique no nome para ver mais detalhes</Text>
+      </View>
+
+      
+      <View >
+
+        <FlatList
+          data={funcionarios}
+          keyExtractor={(item) => item.uid}
+          renderItem={renderItem}
+          contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
+          ListEmptyComponent={<Text style={styles.vazio}>Nenhum funcionário encontrado</Text>}
+        />
+      </View>
     </View>
   );
 };
@@ -110,6 +119,13 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     marginTop: 20,
+  },
+  titulo: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 
