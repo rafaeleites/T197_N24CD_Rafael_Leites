@@ -1,35 +1,74 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
 
 const cor1 = '#000000'; //preto
-const cor2 = "black"; //dourado
-
+const cor2 = "#f0dc82"; //dourado
+const cor3 = '2F2F2F'; // Cinza
+const cor4 = 'F5F5DC'; // Bege
+const cor5 = 'B8860B'; // dourado2
 
 export default function TelaRequisicoes() {
-  const navigation = useNavigation();
+  const [tipoSelecionado, setTipoSelecionado] = useState(''); // Filtro por tipo de requisição
 
   const requisicoes = [
-    { nome: "Nome", tipo: "Tipo de requisição", icon: "account" },
     { nome: "Daniel Silva", tipo: "Aprovação de conta", icon: "account-tie" },
-    { nome: "Jaqueline Santos", tipo: "Alteração no ponto", icon: "account-circle" },
-    { nome: "Joice Barbosa", tipo: "Alteração no ponto", icon: "account-clock" },
+    { nome: "Carlos Pereira", tipo: "Alteração no registro de ponto", icon: "account-clock" },
+    { nome: "Mariana Lima", tipo: "Justificativa de falta", icon: "calendar-remove" },
+    { nome: "Carlos Pereira", tipo: "Justificativa de atraso", icon: "clock-alert" },
+    { nome: "Ana Souza", tipo: "Justificativa de saída antes do previsto", icon: "exit-run" },
+    { nome: "Mariana Lima", tipo: "Alteração no registro de ponto", icon: "account-clock" },
+    { nome: "João Silva", tipo: "Justificativa de falta", icon: "calendar-remove" },
+    { nome: "Pedro Henrique", tipo: "Aprovação de conta", icon: "account-tie" },
+    { nome: "Ana Souza", tipo: "Justificativa de atraso", icon: "clock-alert" },
+    { nome: "João Silva", tipo: "Justificativa de saída antes do previsto", icon: "exit-run" },
   ];
+
+  // Filtrar as requisições com base no tipo selecionado
+  const requisicoesFiltradas = tipoSelecionado
+    ? requisicoes.filter((item) => item.tipo === tipoSelecionado)
+    : requisicoes;
 
   return (
     <View style={styles.container}>
-      {/* Botão Voltar */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <MaterialCommunityIcons name="arrow-left" size={30} color="#fff" />
-      </TouchableOpacity>
-
       {/* Título */}
       <Text style={styles.title}>Requisições</Text>
 
+      {/* Filtros */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+        <TouchableOpacity onPress={() => setTipoSelecionado('')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === '' && styles.filterTextSelected]}>Todos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setTipoSelecionado('Aprovação de conta')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === 'Aprovação de conta' && styles.filterTextSelected]}>
+            Aprovação de conta
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setTipoSelecionado('Alteração no registro de ponto')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === 'Alteração no registro de ponto' && styles.filterTextSelected]}>
+            Alteração no ponto
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de falta')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de falta' && styles.filterTextSelected]}>
+            Justificativa de falta
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de atraso')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de atraso' && styles.filterTextSelected]}>
+            Justificativa de atraso
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de saída antes do previsto')} style={styles.filterButton}>
+          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de saída antes do previsto' && styles.filterTextSelected]}>
+            Saída antecipada
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+
       {/* Lista de Requisições */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {requisicoes.map((item, index) => (
+        {requisicoesFiltradas.map((item, index) => (
           <View key={index} style={styles.card}>
             <MaterialCommunityIcons name={item.icon} size={24} color="#000" style={styles.avatar} />
             <View>
@@ -40,9 +79,12 @@ export default function TelaRequisicoes() {
         ))}
       </ScrollView>
 
-      {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
+      {/* Rodapé com ícones */}
       <View style={styles.footer}>
-      
+        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
+          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" /> 
+          {/* Engrenagem */}
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
           <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
           {/* Comentários */}
@@ -70,13 +112,10 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 20,
   },
-  backButton: {
-    marginBottom: 10,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: cor2,
+    color: '#000', // Alterado para preto
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
@@ -87,8 +126,38 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 5,
   },
+  filterContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 20,
+    gap: 10,
+    zIndex: 1, // Garante que os filtros fiquem acima de outros elementos
+  },
+  filterButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    elevation: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 120,
+    minHeight: 40,
+    zIndex: 2, // Garante que os botões fiquem acima de outros elementos
+  },
+  filterText: {
+    fontSize: 12,
+    color: '#555',
+    textAlign: 'center',
+    flexShrink: 1,
+  },
+  filterTextSelected: {
+    fontWeight: 'bold',
+    color: '#0000FF', // Alterado para azul
+  },
   scrollContainer: {
     paddingBottom: 80,
+    marginTop: 10, // Adiciona espaço entre os filtros e a lista de notificações
   },
   card: {
     flexDirection: 'row',
@@ -109,18 +178,5 @@ const styles = StyleSheet.create({
   tipo: {
     fontSize: 13,
     color: '#555',
-  },
-  footer: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 10,
-    left: 30,
-    right: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    paddingTop: 15,
-    borderRadius: 15,
   },
 });

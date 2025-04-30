@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 
-function TelaNotificacao() {
-  const [notificacaoAtraso, setNotificacaoAtraso] = useState(false);
-  const [notificacaoFalta, setNotificacaoFalta] = useState(false);
-  const [notificacaoExtra, setNotificacaoExtra] = useState(false);
+function TelaAlerta() {
+  const [notificacaoAtraso, setNotificacaoAtraso] = useState(true);
+  const [notificacaoFalta, setNotificacaoFalta] = useState(true);
+  const [notificacaoExtra, setNotificacaoExtra] = useState(true);
 
   return (
     <View style={styles.container}>
+
       <View style={styles.container_title}>
       <Text style={styles.title}>Configurações de Notificações</Text>
       </View>
 
+      <Text style={styles.title}>Notificações</Text>
+
+
       <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar se algum estagiário atrasar</Text>
+        <Text style={styles.optionText}>Notificar atrasos</Text>
         <Switch
           value={notificacaoAtraso}
           onValueChange={setNotificacaoAtraso}
@@ -23,7 +27,7 @@ function TelaNotificacao() {
       </View>
 
       <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar se algum estagiário faltar</Text>
+        <Text style={styles.optionText}>Notificar faltas</Text>
         <Switch
           value={notificacaoFalta}
           onValueChange={setNotificacaoFalta}
@@ -33,7 +37,7 @@ function TelaNotificacao() {
       </View>
 
       <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar sobre novos eventos</Text>
+        <Text style={styles.optionText}>Notificar saídas antes do previsto</Text>
         <Switch
           value={notificacaoExtra}
           onValueChange={setNotificacaoExtra}
@@ -86,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TelaNotificacao;
+export default TelaAlerta;

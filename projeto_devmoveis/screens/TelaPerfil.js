@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 const cor1 = '#000000' //preto
 const cor2 = '#FFFFFF' //branco
 
-
 export default function TelaPerfil() {
   const navigation = useNavigation();
 
@@ -26,10 +25,6 @@ export default function TelaPerfil() {
 
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>email@outlook.com</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Alterar email</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button}>
