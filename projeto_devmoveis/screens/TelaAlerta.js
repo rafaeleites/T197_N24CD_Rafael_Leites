@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 
 function TelaAlerta() {
-  const [notificacaoAtraso, setNotificacaoAtraso] = useState(false);
-  const [notificacaoFalta, setNotificacaoFalta] = useState(false);
-  const [notificacaoExtra, setNotificacaoExtra] = useState(false);
+  const [notificacaoAtraso, setNotificacaoAtraso] = useState(true);
+  const [notificacaoFalta, setNotificacaoFalta] = useState(true);
+  const [notificacaoExtra, setNotificacaoExtra] = useState(true);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Configurações de Notificações</Text>
+      <Text style={styles.title}>Notificações</Text>
 
       <View style={styles.option}>
         <Text style={styles.optionText}>Notificar atrasos</Text>

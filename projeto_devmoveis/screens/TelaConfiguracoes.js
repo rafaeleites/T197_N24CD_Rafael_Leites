@@ -22,9 +22,7 @@ function TelaConfiguracoes() {
         <Text style={styles.optionText}>Alterar Idioma</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option}>
-        <Text style={styles.optionText}>Gerenciar Conta</Text>
-      </TouchableOpacity>
+      
 
       <TouchableOpacity
         style={styles.option}
