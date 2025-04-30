@@ -62,7 +62,7 @@ const TelaPerfilEstagiarios = () => {
     <View style={styles.container}>
       <View>
         <Text style={styles.titulo}>Lista de Estagiários</Text>
-        <Text style={styles.seta}>Clique no nome para ver mais detalhes</Text>
+        
       </View>
 
       
