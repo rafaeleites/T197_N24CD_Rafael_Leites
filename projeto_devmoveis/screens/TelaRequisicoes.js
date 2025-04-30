@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Importação corrigida
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const cor1 = '#000000'; //preto
-const cor2 = "#f0dc82"; //dourado
-const cor3 = '2F2F2F'; // Cinza
-const cor4 = 'F5F5DC'; // Bege
-const cor5 = 'B8860B'; // dourado2
+const cor1 = '#000000'; // Preto
+const cor2 = "#f0dc82"; // Dourado
+const cor3 = '#2F2F2F'; // Cinza
+const cor4 = '#F5F5DC'; // Bege
+const cor5 = '#B8860B'; // Dourado 2
 
 export default function TelaRequisicoes() {
   const [tipoSelecionado, setTipoSelecionado] = useState(''); // Filtro por tipo de requisição
@@ -34,37 +35,21 @@ export default function TelaRequisicoes() {
       {/* Título */}
       <Text style={styles.title}>Requisições</Text>
 
-      {/* Filtros */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-        <TouchableOpacity onPress={() => setTipoSelecionado('')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === '' && styles.filterTextSelected]}>Todos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoSelecionado('Aprovação de conta')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === 'Aprovação de conta' && styles.filterTextSelected]}>
-            Aprovação de conta
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoSelecionado('Alteração no registro de ponto')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === 'Alteração no registro de ponto' && styles.filterTextSelected]}>
-            Alteração no ponto
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de falta')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de falta' && styles.filterTextSelected]}>
-            Justificativa de falta
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de atraso')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de atraso' && styles.filterTextSelected]}>
-            Justificativa de atraso
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setTipoSelecionado('Justificativa de saída antes do previsto')} style={styles.filterButton}>
-          <Text style={[styles.filterText, tipoSelecionado === 'Justificativa de saída antes do previsto' && styles.filterTextSelected]}>
-            Saída antecipada
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      {/* Filtro como Picker */}
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={tipoSelecionado}
+          onValueChange={(itemValue) => setTipoSelecionado(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Todos" value="" />
+          <Picker.Item label="Aprovação de conta" value="Aprovação de conta" />
+          <Picker.Item label="Alteração no registro de ponto" value="Alteração no registro de ponto" />
+          <Picker.Item label="Justificativa de falta" value="Justificativa de falta" />
+          <Picker.Item label="Justificativa de atraso" value="Justificativa de atraso" />
+          <Picker.Item label="Justificativa de saída antes do previsto" value="Justificativa de saída antes do previsto" />
+        </Picker>
+      </View>
 
       {/* Lista de Requisições */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -78,29 +63,6 @@ export default function TelaRequisicoes() {
           </View>
         ))}
       </ScrollView>
-
-      {/* Rodapé com ícones */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" /> 
-          {/* Engrenagem */}
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRequisicoes')}>
-          <MaterialCommunityIcons name="comment-text-multiple" size={30} color="#000" />
-          {/* Comentários */}
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaEstagiarios')}>
-          <MaterialCommunityIcons name="account-group" size={30} color="#000" />
-          {/* Pessoas */}
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
-          <MaterialCommunityIcons
-            name="account-circle-outline" //Foto de perfil
-            size={30}
-            color="#000"
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -115,7 +77,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000', // Alterado para preto
+    color: '#000',
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
@@ -126,38 +88,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 5,
   },
-  filterContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 20,
-    gap: 10,
-    zIndex: 1, // Garante que os filtros fiquem acima de outros elementos
-  },
-  filterButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+  pickerContainer: {
     backgroundColor: '#fff',
     borderRadius: 20,
-    elevation: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 120,
-    minHeight: 40,
-    zIndex: 2, // Garante que os botões fiquem acima de outros elementos
+    marginBottom: 20,
+    elevation: 2,
   },
-  filterText: {
-    fontSize: 12,
-    color: '#555',
-    textAlign: 'center',
-    flexShrink: 1,
-  },
-  filterTextSelected: {
-    fontWeight: 'bold',
-    color: '#0000FF', // Alterado para azul
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#000',
   },
   scrollContainer: {
     paddingBottom: 80,
-    marginTop: 10, // Adiciona espaço entre os filtros e a lista de notificações
+    marginTop: 10,
   },
   card: {
     flexDirection: 'row',
