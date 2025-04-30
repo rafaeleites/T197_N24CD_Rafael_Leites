@@ -13,6 +13,13 @@ function TelaRecursos() {
     <View style={styles.container}>
       <Text style={styles.title}>Recursos</Text>
       <View style={styles.grid}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('TelaModerador')}
+        >
+          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
+          <Text style={styles.buttonText}>Moderador</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
@@ -36,32 +43,6 @@ function TelaRecursos() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('TelaModerador')} // Alterado para TelaModerador
-        >
-          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
-          <Text style={styles.buttonText}>Moderador</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons
-            name="information-outline"
-            size={32}
-            color="f0dc82"
-          />
-          <Text style={styles.buttonText}>Informações</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button}>
-          <MaterialCommunityIcons
-            name="note-edit-outline"
-            size={32}
-            color="f0dc82"
-          />
-          <Text style={styles.buttonText}>Justificativas</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
           onPress={() => navigation.navigate('TelaRequisicoes')}
         >
           <MaterialCommunityIcons
@@ -75,12 +56,12 @@ function TelaRecursos() {
 
       {/* Rodapé com ícones */}
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate('TelaRecursos')}>
+        <TouchableOpacity onPress={() => navigation.navigate('TelaConfiguracoes')}>
           <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacao')}>
-          <MaterialCommunityIcons name="bell-outline" size={30} color="#000" />
+        <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacoes')}>
+          <MaterialCommunityIcons name="bell-ring-outline" size={30} color="#000" />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
