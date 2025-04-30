@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Importação do Picker
 import { getDatabase, ref, onValue, update } from 'firebase/database';
 
 const TelaModerador = () => {
@@ -209,16 +210,28 @@ const TelaModerador = () => {
   return (
     <View style={styles.container}>
       <View style={styles.filtroContainer}>
-        <Text style={styles.labelFiltro}>Filtrar por mês:</Text>
-        <TextInput
-          style={styles.inputFiltro}
-          value={mesSelecionado || ''}
-          onChangeText={setMesSelecionado}
-          placeholder="MM"
-          placeholderTextColor="#999"
-          keyboardType="numeric"
-          maxLength={2}
-        />
+        <Text style={styles.labelFiltro}>Selecione o mês:</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={mesSelecionado}
+            onValueChange={(itemValue) => setMesSelecionado(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Todos" value={null} />
+            <Picker.Item label="Janeiro" value="01" />
+            <Picker.Item label="Fevereiro" value="02" />
+            <Picker.Item label="Março" value="03" />
+            <Picker.Item label="Abril" value="04" />
+            <Picker.Item label="Maio" value="05" />
+            <Picker.Item label="Junho" value="06" />
+            <Picker.Item label="Julho" value="07" />
+            <Picker.Item label="Agosto" value="08" />
+            <Picker.Item label="Setembro" value="09" />
+            <Picker.Item label="Outubro" value="10" />
+            <Picker.Item label="Novembro" value="11" />
+            <Picker.Item label="Dezembro" value="12" />
+          </Picker>
+        </View>
       </View>
 
       {carregando ? (
@@ -311,14 +324,22 @@ const styles = StyleSheet.create({
   labelFiltro: {
     marginRight: 10,
     fontWeight: 'bold',
+    fontSize: 18, // Aumenta o tamanho da fonte
   },
-  inputFiltro: {
+  pickerContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 5,
-    width: 80,
     backgroundColor: '#fff',
+    overflow: 'hidden',
+    width: 150, // Largura suficiente para o texto
+    height: 30, // Altura ajustada para evitar cortes
+    justifyContent: 'center', // Centraliza o texto verticalmente
+  },
+  picker: {
+    height: 50, // Altura ajustada para combinar com o contêiner
+    color: '#000',
+    fontSize: 16,
   },
 });
 
