@@ -7,7 +7,7 @@ const cor1 = '#FFFFFF'; // Branco
 const cor2 = "#f0dc82"; // Dourado
 const cor3 = '#000000'; // Preto
 const cor4 = '#FFFFFF'; // Branco
-const cor5 = '#B8860B'; // Dourado 21
+const cor5 = '#B8860B'; // Dourado ?
 
 export default function TelaRequisicoes() {
   const [tipoSelecionado, setTipoSelecionado] = useState('');
