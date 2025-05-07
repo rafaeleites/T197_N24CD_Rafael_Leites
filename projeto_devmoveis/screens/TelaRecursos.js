@@ -4,7 +4,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useNavigation } from '@react-navigation/native';
 
 const cor1 = '#000000'; // preto
-const cor2 = 'f0dc82'; // dourado
 
 function TelaRecursos() {
   const navigation = useNavigation();
@@ -17,7 +16,7 @@ function TelaRecursos() {
           style={styles.button}
           onPress={() => navigation.navigate('TelaModerador')}
         >
-          <MaterialCommunityIcons name="database-edit" size={32} color="f0dc82" />
+          <MaterialCommunityIcons name="database-edit" size={32} color={cor1} />
           <Text style={styles.buttonText}>Moderador</Text>
         </TouchableOpacity>
 
@@ -28,7 +27,7 @@ function TelaRecursos() {
           <MaterialCommunityIcons
             name="account-group-outline"
             size={32}
-            color="f0dc82"
+            color={cor1}
           />
           <Text style={styles.buttonText}>Lista de Estagiários</Text>
         </TouchableOpacity>
@@ -37,38 +36,37 @@ function TelaRecursos() {
           style={styles.button}
           onPress={() => navigation.navigate('TelaRegistro')}
         >
-          <MaterialCommunityIcons name="history" size={32} color="f0dc82" />
+          <MaterialCommunityIcons name="history" size={32} color={cor1} />
           <Text style={styles.buttonText}>Histórico de registros</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
-
           onPress={() => navigation.navigate('TelaRequisicoes')}
         >
           <MaterialCommunityIcons
             name="comment-text-multiple"
             size={32}
-            color="f0dc82"
+            color={cor1}
           />
           <Text style={styles.buttonText}>Requisições</Text>
         </TouchableOpacity>
       </View>
 
-       {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
+      {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => navigation.navigate('TelaConfiguracoes')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color="#000" />
+          <MaterialCommunityIcons name="cog-outline" size={30} color={cor1} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacoes')}>
-          <MaterialCommunityIcons name="bell-ring-outline" size={30} color="#000" />
+          <MaterialCommunityIcons name="bell-ring-outline" size={30} color={cor1} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
-            name="account-circle-outline" //Foto de perfil
+            name="account-circle-outline" // Foto de perfil
             size={30}
-            color="#000"
+            color={cor1}
           />
         </TouchableOpacity>
       </View>
@@ -79,15 +77,15 @@ function TelaRecursos() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: cor1,
+    backgroundColor: '#f5f5f5', // Alterado para o padrão
     paddingHorizontal: 20,
     paddingTop: 50,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    backgroundColor: '#fff',
-    color: cor2,
+    backgroundColor: 'transparent', // Fundo branco removido
+    color: cor1, // Texto "Recursos" em preto
     textAlign: 'center',
     marginBottom: 30,
     padding: 10,

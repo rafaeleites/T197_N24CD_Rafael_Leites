@@ -8,13 +8,7 @@ function TelaAlerta() {
 
   return (
     <View style={styles.container}>
-
-      <View style={styles.container_title}>
-      <Text style={styles.title}>Configurações de Notificações</Text>
-      </View>
-
-      <Text style={styles.title}>Notificações</Text>
-
+      <Text style={styles.title}>Configurar Alertas</Text>
 
       <View style={styles.option}>
         <Text style={styles.optionText}>Notificar atrasos</Text>
@@ -52,15 +46,16 @@ function TelaAlerta() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#f5f5f5', // Alterado para o padrão
     padding: 20,
   },
   title: {
-    fontSize: 35,
+    fontSize: 26, // Fonte ajustada para manter o padrão
     fontWeight: 'bold',
-    color: 'black',
+    color: '#000', // Texto em preto
     textAlign: 'center',
     marginBottom: 30,
+    backgroundColor: 'transparent', // Fundo branco removido
   },
   option: {
     flexDirection: 'row',
@@ -81,12 +76,6 @@ const styles = StyleSheet.create({
     color: '#000',
     flex: 1,
     marginRight: 10,
-  },
-  container_title: {
-    backgroundColor: 'white', // Fundo dourado
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 20,
   },
 });
 

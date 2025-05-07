@@ -15,15 +15,15 @@ export default function TelaRequisicoes() {
   const [requisicaoSelecionada, setRequisicaoSelecionada] = useState(null);
   const [requisicoesAtuais, setRequisicoesAtuais] = useState([
     { nome: "Daniel Silva", tipo: "Aprovação de conta", icon: "account-tie" },
-    { nome: "Carlos Pereira", tipo: "Alteração no registro de ponto", icon: "account-clock" },
-    { nome: "Mariana Lima", tipo: "Justificativa de falta", icon: "calendar-remove" },
-    { nome: "Carlos Pereira", tipo: "Justificativa de atraso", icon: "clock-alert" },
-    { nome: "Ana Souza", tipo: "Justificativa de saída antecipada", icon: "exit-run" },
-    { nome: "Mariana Lima", tipo: "Alteração no registro de ponto", icon: "account-clock" },
-    { nome: "João Silva", tipo: "Justificativa de falta", icon: "calendar-remove" },
+    { nome: "Carlos Pereira", tipo: "Alteração no registro de ponto", icon: "account-clock", data: "2025-05-07", hora: "14:00" },
+    { nome: "Mariana Lima", tipo: "Justificativa de falta", icon: "calendar-remove", data: "2025-05-06" },
+    { nome: "Carlos Pereira", tipo: "Justificativa de atraso", icon: "clock-alert", data: "2025-05-07" },
+    { nome: "Ana Souza", tipo: "Justificativa de saída antecipada", icon: "exit-run", data: "2025-05-07", hora: "16:00" },
+    { nome: "Mariana Lima", tipo: "Alteração no registro de ponto", icon: "account-clock", data: "2025-05-06", hora: "09:00" },
+    { nome: "João Silva", tipo: "Justificativa de falta", icon: "calendar-remove", data: "2025-05-05" },
     { nome: "Pedro Henrique", tipo: "Aprovação de conta", icon: "account-tie" },
-    { nome: "Ana Souza", tipo: "Justificativa de atraso", icon: "clock-alert" },
-    { nome: "João Silva", tipo: "Justificativa de saída antecipada", icon: "exit-run" },
+    { nome: "Ana Souza", tipo: "Justificativa de atraso", icon: "clock-alert", data: "2025-05-07" },
+    { nome: "João Silva", tipo: "Justificativa de saída antecipada", icon: "exit-run", data: "2025-05-07", hora: "15:30" },
   ]);
 
   const requisicoesFiltradas = tipoSelecionado
@@ -99,9 +99,13 @@ export default function TelaRequisicoes() {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Requisição</Text>
               <Text style={styles.modalText}>Nome: {requisicaoSelecionada.nome}</Text>
-              <Text style={styles.modalText}>
-                Tipo: {requisicaoSelecionada.tipo === "Justificativa de saída antecipada" ? "Justificativa de saída" : requisicaoSelecionada.tipo}
-              </Text>
+              <Text style={styles.modalText}>Tipo: {requisicaoSelecionada.tipo}</Text>
+              {requisicaoSelecionada.data && (
+                <Text style={styles.modalText}>Data: {requisicaoSelecionada.data}</Text>
+              )}
+              {requisicaoSelecionada.hora && (
+                <Text style={styles.modalText}>Hora: {requisicaoSelecionada.hora}</Text>
+              )}
               <View style={styles.modalButtons}>
                 <TouchableOpacity style={styles.approveButton} onPress={handleAprovar}>
                   <Text style={styles.buttonText}>Aprovar</Text>
@@ -121,13 +125,13 @@ export default function TelaRequisicoes() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: cor3, // Fundo preto
+    backgroundColor: '#f5f5f5', // Fundo padrão
     padding: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: cor1, // Branco
+    color: cor3, // Preto
     marginBottom: 10,
     textAlign: 'center',
   },

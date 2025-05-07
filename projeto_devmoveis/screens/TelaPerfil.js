@@ -1,37 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { getAuth, signOut } from 'firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
 
-const cor1 = '#000000' //preto
-const cor2 = '#FFFFFF' //branco
-
 export default function TelaPerfil() {
+  const [user, setUser] = useState({ name: 'Carregando...', email: 'Carregando...' });
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      const email = currentUser.email;
+
+      // Buscar o nome no Realtime Database
+      const db = getDatabase();
+      const adminRef = ref(db, 'administradores');
+      onValue(adminRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Procurar o nome correspondente ao e-mail
+          const admin = Object.values(data).find((admin) => admin.email === email);
+          if (admin) {
+            setUser({ name: admin.nome, email: admin.email });
+          } else {
+            setUser({ name: 'Usuário não encontrado', email });
+          }
+        }
+      });
+    }
+  }, []);
+
+  const handleLogout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        navigation.replace('TelaLogin'); // Redireciona para a tela de login
+      })
+      .catch((error) => {
+        console.error('Erro ao sair:', error);
+      });
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('TelaRecursos')}>
-        <MaterialCommunityIcons name="arrow-left" size={30} color='#FFFFFF' />
-      </TouchableOpacity>
-
       <Text style={styles.title}>Meu Perfil</Text>
 
       <Image
         source={{ uri: 'https://via.placeholder.com/100x100.png?text=Perfil' }}
         style={styles.avatar}
       />
-      <Text style={styles.name}>Nome do Adm</Text>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>email@outlook.com</Text>
-      </TouchableOpacity>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>{user.name}</Text>
+      </View>
+
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>{user.email}</Text>
+      </View>
 
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Alterar senha</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TelaLogin')}>
+      <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
     </View>
@@ -41,48 +75,51 @@ export default function TelaPerfil() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: cor1,
+    backgroundColor: '#f5f5f5', // Mesma cor de fundo da TelaNotificacoes
     alignItems: 'center',
     paddingTop: 40,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 15,
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    backgroundColor: cor2,
-    paddingHorizontal: 25,
-    paddingVertical: 10,
-    borderRadius: 15,
-    color: cor1,
+    textAlign: 'center',
     marginBottom: 20,
+    color: '#333', // Mesma cor do título da TelaNotificacoes
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
     backgroundColor: '#eee',
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  name: {
-    color: cor2,
-    fontSize: 16,
-    marginBottom: 30,
-  },
-  button: {
-    width: '80%',
-    backgroundColor: cor2,
+  infoContainer: {
+    width: '100%',
+    backgroundColor: '#fff', // Mesma cor dos itens da TelaNotificacoes
     paddingVertical: 15,
-    borderRadius: 20,
+    borderRadius: 8,
     marginBottom: 15,
     alignItems: 'center',
-    elevation: 4,
+    elevation: 3,
+  },
+  infoText: {
+    fontSize: 16,
+    color: '#333', // Mesma cor do texto dos itens da TelaNotificacoes
+    fontWeight: 'bold',
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#fff', // Mesma cor dos itens da TelaNotificacoes
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    alignItems: 'center',
+    elevation: 3,
   },
   buttonText: {
-    color: cor1,
+    fontSize: 16,
+    color: '#333', // Mesma cor do texto dos itens da TelaNotificacoes
     fontWeight: 'bold',
   },
 });
