@@ -72,11 +72,6 @@ function TelaCadastro() {
 
   return (
     <View style={styles.container}>
-      {/* Botão de Voltar */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="white" />
-      </TouchableOpacity>
-
       <Text style={styles.title}>Cadastro</Text>
 
       <TextInput
@@ -125,13 +120,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    backgroundColor: 'transparent',
-    padding: 10,
   },
   title: {
     fontSize: 24,
