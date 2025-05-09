@@ -167,9 +167,9 @@ export default function TelaRequisicoes() {
               )}
               {requisicaoSelecionada.atestado !== undefined && (
                 <Text style={styles.modalText}>
-                  Atestado: {requisicaoSelecionada.atestado ? "Sim" : "Não"}
+                  Possui Atestado? {requisicaoSelecionada.atestado ? "Sim" : "Não"}
                 </Text>
-              )}
+)}
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setJustificativaModalVisible(false)}
