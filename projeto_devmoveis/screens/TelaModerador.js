@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; // Importação do Picker
 import { getDatabase, ref, onValue, update } from 'firebase/database';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 const TelaModerador = () => {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
   const [editando, setEditando] = useState(null);
@@ -125,9 +127,9 @@ const TelaModerador = () => {
 
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
         <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
-          <Text style={styles.nome}>
+          <Text style={[styles.nome, { color: isDarkMode ? 'white' : 'black' }]}>
             {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
           </Text>
         </TouchableOpacity>
@@ -141,9 +143,17 @@ const TelaModerador = () => {
                 return mes === mesSelecionado;
               })
               .map(([data, info]) => (
-                <View key={data} style={styles.registro}>
+                <View
+                  key={data}
+                  style={[
+                    styles.registro,
+                    { backgroundColor: isDarkMode ? '#444' : '#f9f9f9', borderColor: isDarkMode ? '#555' : '#ddd' },
+                  ]}
+                >
                   <TouchableOpacity onPress={() => toggleExpandido(`${item.uid}_${data}`)}>
-                    <Text style={styles.data}>{formatarData(data)}</Text>
+                    <Text style={[styles.data, { color: isDarkMode ? 'white' : 'black' }]}>
+                      {formatarData(data)}
+                    </Text>
                   </TouchableOpacity>
 
                   {expandido[`${item.uid}_${data}`] && (
@@ -151,28 +161,40 @@ const TelaModerador = () => {
                       {editando === data ? (
                         <>
                           <TextInput
-                            style={styles.input}
+                            style={[
+                              styles.input,
+                              { backgroundColor: isDarkMode ? '#555' : '#fff', color: isDarkMode ? 'white' : 'black' },
+                            ]}
                             value={novoEntrada}
                             onChangeText={setNovoEntrada}
                             placeholder="Nova entrada"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={isDarkMode ? '#ccc' : '#999'}
                           />
                           <TextInput
-                            style={styles.input}
+                            style={[
+                              styles.input,
+                              { backgroundColor: isDarkMode ? '#555' : '#fff', color: isDarkMode ? 'white' : 'black' },
+                            ]}
                             value={novoSaida}
                             onChangeText={setNovoSaida}
                             placeholder="Nova saída"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={isDarkMode ? '#ccc' : '#999'}
                           />
                           <TextInput
-                            style={styles.input}
+                            style={[
+                              styles.input,
+                              { backgroundColor: isDarkMode ? '#555' : '#fff', color: isDarkMode ? 'white' : 'black' },
+                            ]}
                             value={novoPausa}
                             onChangeText={setNovoPausa}
                             placeholder="Novas pausas (separadas por vírgula)"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={isDarkMode ? '#ccc' : '#999'}
                           />
                           <TouchableOpacity
-                            style={styles.botaoSalvar}
+                            style={[
+                              styles.botaoSalvar,
+                              { backgroundColor: isDarkMode ? 'green' : 'green' },
+                            ]}
                             onPress={() => salvarEdicao(item.uid, data)}
                           >
                             <Text style={styles.textoBotao}>Salvar</Text>
@@ -180,12 +202,23 @@ const TelaModerador = () => {
                         </>
                       ) : (
                         <>
-                          <Text>Entrada: {info.entrada || 'N/A'}</Text>
-                          <Text>Saída: {info.saida || 'N/A'}</Text>
-                          <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                          <Text>Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}</Text>
+                          <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
+                            Entrada: {info.entrada || 'N/A'}
+                          </Text>
+                          <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
+                            Saída: {info.saida || 'N/A'}
+                          </Text>
+                          <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
+                            Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}
+                          </Text>
+                          <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
+                            Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}
+                          </Text>
                           <TouchableOpacity
-                            style={styles.botaoEditar}
+                            style={[
+                              styles.botaoEditar,
+                              { backgroundColor: isDarkMode ? '#1e90ff' : '#1e90ff' },
+                            ]}
                             onPress={() => {
                               setEditando(data);
                               setNovoEntrada(info.entrada || '');
@@ -208,14 +241,19 @@ const TelaModerador = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f2f2f2' }]}>
       <View style={styles.filtroContainer}>
-        <Text style={styles.labelFiltro}>Selecione o mês:</Text>
-        <View style={styles.pickerContainer}>
+        <Text style={[styles.labelFiltro, { color: isDarkMode ? 'white' : 'black' }]}>Selecione o mês:</Text>
+        <View
+          style={[
+            styles.pickerContainer,
+            { backgroundColor: isDarkMode ? '#333' : '#fff', borderColor: isDarkMode ? '#555' : '#ccc' },
+          ]}
+        >
           <Picker
             selectedValue={mesSelecionado}
             onValueChange={(itemValue) => setMesSelecionado(itemValue)}
-            style={styles.picker}
+            style={[styles.picker, { color: isDarkMode ? 'white' : 'black' }]}
           >
             <Picker.Item label="Todos" value={null} />
             <Picker.Item label="Janeiro" value="01" />
@@ -242,7 +280,11 @@ const TelaModerador = () => {
           keyExtractor={(item) => item.uid}
           renderItem={renderItem}
           contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-          ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
+          ListEmptyComponent={
+            <Text style={[styles.vazio, { color: isDarkMode ? '#ccc' : '#999' }]}>
+              Nenhum estagiário encontrado
+            </Text>
+          }
         />
       )}
     </View>
@@ -252,12 +294,10 @@ const TelaModerador = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
     paddingHorizontal: 10,
     paddingTop: 20,
   },
   card: {
-    backgroundColor: '#fff',
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
@@ -278,10 +318,8 @@ const styles = StyleSheet.create({
   registro: {
     marginBottom: 10,
     padding: 10,
-    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
   },
   data: {
     fontWeight: 'bold',
@@ -289,19 +327,16 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
     padding: 5,
     marginBottom: 10,
   },
   botaoEditar: {
-    backgroundColor: '#1e90ff',
     padding: 10,
     borderRadius: 5,
     marginTop: 5,
   },
   botaoSalvar: {
-    backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
     marginTop: 5,
@@ -312,7 +347,6 @@ const styles = StyleSheet.create({
   },
   vazio: {
     fontStyle: 'italic',
-    color: '#999',
     textAlign: 'center',
     marginTop: 20,
   },
@@ -324,21 +358,17 @@ const styles = StyleSheet.create({
   labelFiltro: {
     marginRight: 10,
     fontWeight: 'bold',
-    fontSize: 18, // Aumenta o tamanho da fonte
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: '#fff',
     overflow: 'hidden',
-    width: 150, // Largura suficiente para o texto
-    height: 30, // Altura ajustada para evitar cortes
-    justifyContent: 'center', // Centraliza o texto verticalmente
+    width: 150,
+    height: 30,
+    justifyContent: 'center',
   },
   picker: {
-    height: 50, // Altura ajustada para combinar com o contêiner
-    color: '#000',
+    height: 50,
     fontSize: 16,
   },
 });
