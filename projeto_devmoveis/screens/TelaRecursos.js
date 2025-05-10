@@ -2,71 +2,100 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
-
-const cor1 = '#000000'; // preto
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 function TelaRecursos() {
   const navigation = useNavigation();
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Recursos</Text>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f5f5f5' }]}>
+      <Text style={[styles.title, { color: isDarkMode ? 'white' : '#000' }]}>Recursos</Text>
       <View style={styles.grid}>
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}
           onPress={() => navigation.navigate('TelaModerador')}
         >
-          <MaterialCommunityIcons name="database-edit" size={32} color={cor1} />
-          <Text style={styles.buttonText}>Moderador</Text>
+          <MaterialCommunityIcons
+            name="database-edit"
+            size={32}
+            color={isDarkMode ? 'white' : '#000'}
+          />
+          <Text style={[styles.buttonText, { color: isDarkMode ? 'white' : '#000' }]}>
+            Moderador
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}
           onPress={() => navigation.navigate('TelaPerfilEstagiario')}
         >
           <MaterialCommunityIcons
             name="account-group-outline"
             size={32}
-            color={cor1}
+            color={isDarkMode ? 'white' : '#000'}
           />
-          <Text style={styles.buttonText}>Lista de Estagiários</Text>
+          <Text style={[styles.buttonText, { color: isDarkMode ? 'white' : '#000' }]}>
+            Lista de Estagiários
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}
           onPress={() => navigation.navigate('TelaRegistro')}
         >
-          <MaterialCommunityIcons name="history" size={32} color={cor1} />
-          <Text style={styles.buttonText}>Histórico de registros</Text>
+          <MaterialCommunityIcons
+            name="history"
+            size={32}
+            color={isDarkMode ? 'white' : '#000'}
+          />
+          <Text style={[styles.buttonText, { color: isDarkMode ? 'white' : '#000' }]}>
+            Histórico de registros
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}
           onPress={() => navigation.navigate('TelaRequisicoes')}
         >
           <MaterialCommunityIcons
             name="comment-text-multiple"
             size={32}
-            color={cor1}
+            color={isDarkMode ? 'white' : '#000'}
           />
-          <Text style={styles.buttonText}>Requisições</Text>
+          <Text style={[styles.buttonText, { color: isDarkMode ? 'white' : '#000' }]}>
+            Requisições
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Rodapé (USAR IGUAL EM TODAS AS TELAS) */}
-      <View style={styles.footer}>
+      {/* Rodapé */}
+      <View
+        style={[
+          styles.footer,
+          { backgroundColor: isDarkMode ? '#333' : 'white', borderColor: isDarkMode ? '#555' : '#ccc' },
+        ]}
+      >
         <TouchableOpacity onPress={() => navigation.navigate('TelaConfiguracoes')}>
-          <MaterialCommunityIcons name="cog-outline" size={30} color={cor1} />
+          <MaterialCommunityIcons
+            name="cog-outline"
+            size={30}
+            color={isDarkMode ? 'white' : '#000'}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('TelaNotificacoes')}>
-          <MaterialCommunityIcons name="bell-ring-outline" size={30} color={cor1} />
+          <MaterialCommunityIcons
+            name="bell-ring-outline"
+            size={30}
+            color={isDarkMode ? 'white' : '#000'}
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('TelaPerfil')}>
           <MaterialCommunityIcons
-            name="account-circle-outline" // Foto de perfil
+            name="account-circle-outline"
             size={30}
-            color={cor1}
+            color={isDarkMode ? 'white' : '#000'}
           />
         </TouchableOpacity>
       </View>
@@ -77,15 +106,13 @@ function TelaRecursos() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Alterado para o padrão
     paddingHorizontal: 20,
     paddingTop: 50,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    backgroundColor: 'transparent', // Fundo branco removido
-    color: cor1, // Texto "Recursos" em preto
+    backgroundColor: 'transparent',
     textAlign: 'center',
     marginBottom: 30,
     padding: 10,
@@ -98,7 +125,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '47%',
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 15,
     marginBottom: 20,
@@ -113,12 +139,10 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#000',
     textAlign: 'center',
     marginTop: 10,
   },
   footer: {
-    backgroundColor: 'white',
     position: 'absolute',
     bottom: 10,
     left: 30,
@@ -128,6 +152,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 15,
+    borderWidth: 1,
   },
 });
 

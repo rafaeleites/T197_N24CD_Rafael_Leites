@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Switch, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 function TelaConfiguracoes() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme(); // Usar o contexto do tema
   const [modalVisible, setModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('Português');
@@ -15,37 +16,34 @@ function TelaConfiguracoes() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Configurações</Text>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f5f5f5' }]}>
+      <Text style={[styles.title, { color: isDarkMode ? 'white' : 'black' }]}>Configurações</Text>
 
       <View style={styles.option}>
-        <Text style={styles.optionText}>Modo Escuro</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Modo Escuro</Text>
+        <Switch value={isDarkMode} onValueChange={toggleTheme} />
       </View>
 
       <TouchableOpacity
         style={styles.option}
         onPress={() => setLanguageModalVisible(true)}
       >
-        <Text style={styles.optionText}>Alterar Idioma</Text>
-        <Text style={styles.selectedLanguage}>{selectedLanguage}</Text>
+        <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Alterar Idioma</Text>
+        <Text style={[styles.selectedLanguage, { color: isDarkMode ? '#ccc' : '#555' }]}>{selectedLanguage}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.option}
         onPress={() => navigation.navigate('TelaAlerta')}
       >
-        <Text style={styles.optionText}>Notificações</Text>
+        <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Notificações</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.option}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.optionText}>Sobre o Aplicativo</Text>
+        <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Sobre o Aplicativo</Text>
       </TouchableOpacity>
 
       {/* Modal para exibir informações do aplicativo */}
@@ -56,11 +54,11 @@ function TelaConfiguracoes() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Sobre o Aplicativo</Text>
-            <Text style={styles.modalText}>Versão: 1.2.0</Text>
-            <Text style={styles.modalText}>Última atualização: 01/05/2025</Text>
-            <Text style={styles.modalText}>Desenvolvido por R&D Softwares</Text>
+          <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Sobre o Aplicativo</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Versão: 1.2.0</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Última atualização: 01/05/2025</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Desenvolvido por R&D Softwares</Text>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setModalVisible(false)}
@@ -79,25 +77,25 @@ function TelaConfiguracoes() {
         onRequestClose={() => setLanguageModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Selecione o Idioma</Text>
+          <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Selecione o Idioma</Text>
             <TouchableOpacity
-              style={styles.languageOption}
+              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
               onPress={() => changeLanguage('Português')}
             >
-              <Text style={styles.languageText}>Português</Text>
+              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Português</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.languageOption}
+              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
               onPress={() => changeLanguage('Inglês')}
             >
-              <Text style={styles.languageText}>Inglês</Text>
+              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Inglês</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.languageOption}
+              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
               onPress={() => changeLanguage('Espanhol')}
             >
-              <Text style={styles.languageText}>Espanhol</Text>
+              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Espanhol</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.closeButton}
@@ -116,7 +114,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 26,
@@ -137,7 +134,6 @@ const styles = StyleSheet.create({
   },
   selectedLanguage: {
     fontSize: 14,
-    color: '#555',
   },
   modalContainer: {
     flex: 1,
@@ -147,7 +143,6 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
-    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
@@ -157,11 +152,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
   languageOption: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginVertical: 5,
-    backgroundColor: '#f0f0f0',
     borderRadius: 5,
     width: '100%',
     alignItems: 'center',
