@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
+
+// Mapeamento de avatares para cada estagiário
+const avatarMap = {
+  uidDoFuncionario2: require('../assets/avatar3.png'),
+  uidDoFuncionario3: require('../assets/avatar2.png'),
+  uidDoFuncionario4: require('../assets/avatar4.png'),
+  uidDoFuncionario5: require('../assets/avatar5.png'),
+};
 
 const TelaPerfilEstagiarios = () => {
   const { isDarkMode } = useTheme(); // Usar o estado do tema
@@ -42,7 +50,11 @@ const TelaPerfilEstagiarios = () => {
   const renderItem = ({ item }) => {
     return (
       <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-        <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
+        <TouchableOpacity onPress={() => toggleExpandido(item.uid)} style={styles.row}>
+          <Image
+            source={avatarMap[item.uid] || require('../assets/avatar.png')} // Seleciona o avatar com base no UID
+            style={styles.avatar}
+          />
           <Text style={[styles.nome, { color: isDarkMode ? 'white' : 'black' }]}>
             {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
           </Text>
@@ -99,6 +111,16 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 10,
     elevation: 3,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
   nome: {
     fontSize: 18,

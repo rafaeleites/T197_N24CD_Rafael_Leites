@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
+import { useTheme } from '../contexts/ThemeContext';
+
+// Mapeamento de avatares para cada estagiário
+const avatarMap = {
+  uidDoFuncionario2: require('../assets/avatar3.png'),
+  uidDoFuncionario3: require('../assets/avatar2.png'),
+  uidDoFuncionario4: require('../assets/avatar4.png'),
+  uidDoFuncionario5: require('../assets/avatar5.png'),
+};
 
 const TelaRegistro = () => {
-  const { isDarkMode } = useTheme(); // Usar o estado do tema
+  const { isDarkMode } = useTheme();
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
   const [filtroMes, setFiltroMes] = useState('7dias');
@@ -112,26 +120,41 @@ const TelaRegistro = () => {
 
     return (
       <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-        <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
-          <Text style={[styles.nome, { color: isDarkMode ? 'white' : '#000' }]}>
-            {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
-          </Text>
-        </TouchableOpacity>
-
-        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
-          Dias trabalhados: {diasTrabalhados}
-        </Text>
-        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
-          Carga horária esperada: {minutosParaTexto(minutosEsperados)}
-        </Text>
-        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
-          Carga horária realizada: {minutosParaTexto(totalMinutos)}
-        </Text>
-        <Text style={[styles.info, corDiferenca]}>
-          {diferenca < 0
-            ? `Faltando: ${minutosParaTexto(Math.abs(diferenca))}`
-            : `Sobrando: ${minutosParaTexto(diferenca)}`}
-        </Text>
+        <View style={styles.row}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={avatarMap[item.uid] || require('../assets/avatar.png')} // Seleciona o avatar com base no UID
+              style={styles.avatar}
+            />
+            <TouchableOpacity
+              style={styles.botaoDetalhes}
+              onPress={() => toggleExpandido(item.uid)}
+            >
+              <Text style={styles.textoBotao}>
+                {expandido[item.uid] ? 'Ocultar' : 'Ver detalhes'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={[styles.nome, { color: isDarkMode ? 'white' : '#000' }]}>
+              {item.nome}
+            </Text>
+            <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
+              Dias trabalhados: {diasTrabalhados}
+            </Text>
+            <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
+              Carga horária esperada: {minutosParaTexto(minutosEsperados)}
+            </Text>
+            <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
+              Carga horária realizada: {minutosParaTexto(totalMinutos)}
+            </Text>
+            <Text style={[styles.info, corDiferenca]}>
+              {diferenca < 0
+                ? `Faltando: ${minutosParaTexto(Math.abs(diferenca))}`
+                : `Sobrando: ${minutosParaTexto(diferenca)}`}
+            </Text>
+          </View>
+        </View>
 
         {expandido[item.uid] && (
           <View style={styles.registros}>
@@ -141,7 +164,10 @@ const TelaRegistro = () => {
                   key={data}
                   style={[
                     styles.registro,
-                    { backgroundColor: isDarkMode ? '#444' : '#f9f9f9' },
+                    {
+                      backgroundColor: isDarkMode ? '#444' : '#f9f9f9',
+                      borderColor: isDarkMode ? '#666' : '#ccc',
+                    },
                   ]}
                 >
                   <Text style={[styles.data, { color: isDarkMode ? '#fff' : '#000' }]}>
@@ -233,14 +259,38 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 3,
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  botaoDetalhes: {
+    marginTop: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+  },
+  textoBotao: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  infoContainer: {
+    flex: 1,
+  },
   nome: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
-  },
-  seta: {
-    fontSize: 16,
-    color: '#666',
   },
   info: {
     fontSize: 14,

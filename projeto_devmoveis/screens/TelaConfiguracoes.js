@@ -6,20 +6,13 @@ import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do t
 function TelaConfiguracoes() {
   const { isDarkMode, toggleTheme } = useTheme(); // Usar o contexto do tema
   const [modalVisible, setModalVisible] = useState(false);
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('Português');
   const [notifications, setNotifications] = useState({
     atrasos: false,
     faltas: false,
     saidas: false,
   });
   const navigation = useNavigation();
-
-  const changeLanguage = (language) => {
-    setSelectedLanguage(language);
-    setLanguageModalVisible(false);
-  };
 
   const toggleNotification = (type) => {
     setNotifications((prev) => ({
@@ -36,14 +29,6 @@ function TelaConfiguracoes() {
         <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Modo Escuro</Text>
         <Switch value={isDarkMode} onValueChange={toggleTheme} />
       </View>
-
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => setLanguageModalVisible(true)}
-      >
-        <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Alterar Idioma</Text>
-        <Text style={[styles.selectedLanguage, { color: isDarkMode ? '#ccc' : '#555' }]}>{selectedLanguage}</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.option}
@@ -100,44 +85,6 @@ function TelaConfiguracoes() {
         </View>
       </Modal>
 
-      {/* Modal para selecionar idioma */}
-      <Modal
-        visible={languageModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setLanguageModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Selecione o Idioma</Text>
-            <TouchableOpacity
-              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
-              onPress={() => changeLanguage('Português')}
-            >
-              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Português</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
-              onPress={() => changeLanguage('Inglês')}
-            >
-              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Inglês</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.languageOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}
-              onPress={() => changeLanguage('Espanhol')}
-            >
-              <Text style={[styles.languageText, { color: isDarkMode ? 'white' : 'black' }]}>Espanhol</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setLanguageModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Fechar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
       {/* Modal para sobre o aplicativo */}
       <Modal
         visible={modalVisible}
@@ -186,9 +133,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
   },
-  selectedLanguage: {
-    fontSize: 14,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -219,16 +163,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     width: '100%',
-  },
-  languageOption: {
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    width: '100%',
-  },
-  languageText: {
-    fontSize: 16,
-    textAlign: 'center',
   },
   closeButton: {
     marginTop: 20,
