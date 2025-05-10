@@ -7,12 +7,25 @@ function TelaConfiguracoes() {
   const { isDarkMode, toggleTheme } = useTheme(); // Usar o contexto do tema
   const [modalVisible, setModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('Português');
+  const [notifications, setNotifications] = useState({
+    atrasos: false,
+    faltas: false,
+    saidas: false,
+  });
   const navigation = useNavigation();
 
   const changeLanguage = (language) => {
     setSelectedLanguage(language);
     setLanguageModalVisible(false);
+  };
+
+  const toggleNotification = (type) => {
+    setNotifications((prev) => ({
+      ...prev,
+      [type]: !prev[type],
+    }));
   };
 
   return (
@@ -34,7 +47,7 @@ function TelaConfiguracoes() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('TelaAlerta')}
+        onPress={() => setNotificationModalVisible(true)}
       >
         <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Notificações</Text>
       </TouchableOpacity>
@@ -46,22 +59,40 @@ function TelaConfiguracoes() {
         <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Sobre o Aplicativo</Text>
       </TouchableOpacity>
 
-      {/* Modal para exibir informações do aplicativo */}
+      {/* Modal para notificações */}
       <Modal
-        visible={modalVisible}
+        visible={notificationModalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => setNotificationModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Sobre o Aplicativo</Text>
-            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Versão: 1.2.0</Text>
-            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Última atualização: 01/05/2025</Text>
-            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Desenvolvido por R&D Softwares</Text>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Notificações</Text>
+            <View style={[styles.notificationOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
+              <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Notificar Atrasos</Text>
+              <Switch
+                value={notifications.atrasos}
+                onValueChange={() => toggleNotification('atrasos')}
+              />
+            </View>
+            <View style={[styles.notificationOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
+              <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Notificar Faltas</Text>
+              <Switch
+                value={notifications.faltas}
+                onValueChange={() => toggleNotification('faltas')}
+              />
+            </View>
+            <View style={[styles.notificationOption, { backgroundColor: isDarkMode ? '#444' : '#f0f0f0' }]}>
+              <Text style={[styles.optionText, { color: isDarkMode ? 'white' : 'black' }]}>Notificar Saídas</Text>
+              <Switch
+                value={notifications.saidas}
+                onValueChange={() => toggleNotification('saidas')}
+              />
+            </View>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
+              onPress={() => setNotificationModalVisible(false)}
             >
               <Text style={styles.closeButtonText}>Fechar</Text>
             </TouchableOpacity>
@@ -100,6 +131,29 @@ function TelaConfiguracoes() {
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setLanguageModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal para sobre o aplicativo */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : 'black' }]}>Sobre o Aplicativo</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Versão: 1.2.0</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Última atualização: 01/05/2025</Text>
+            <Text style={[styles.modalText, { color: isDarkMode ? '#ccc' : 'black' }]}>Desenvolvido por R&D Softwares</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
             >
               <Text style={styles.closeButtonText}>Fechar</Text>
             </TouchableOpacity>
@@ -152,20 +206,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 5,
+  notificationOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    width: '100%',
   },
   languageOption: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginVertical: 5,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
     width: '100%',
-    alignItems: 'center',
   },
   languageText: {
     fontSize: 16,
+    textAlign: 'center',
   },
   closeButton: {
     marginTop: 20,
@@ -177,6 +240,10 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
   },
 });
 
