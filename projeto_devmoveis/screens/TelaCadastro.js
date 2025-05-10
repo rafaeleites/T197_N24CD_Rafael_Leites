@@ -2,25 +2,33 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
-import { useNavigation } from '@react-navigation/native'; // Importação do useNavigation
-import { Ionicons } from '@expo/vector-icons'; // Biblioteca de ícones (instale com expo install @expo/vector-icons)
+import { useNavigation } from '@react-navigation/native';
 
 function TelaCadastro() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmaSenha, setConfirmaSenha] = useState('');
+  const [codigoAutenticacao, setCodigoAutenticacao] = useState('');
 
-  const navigation = useNavigation(); // Hook para navegação
+  const navigation = useNavigation();
+
+  // Código de autenticação definido (idealmente, isso deve vir de um backend seguro)
+  const CODIGO_VALIDO = '123456'; // Substitua por um código real e seguro
 
   const handleCadastro = async () => {
-    if (!nome || !email || !senha || !confirmaSenha) {
+    if (!nome || !email || !senha || !confirmaSenha || !codigoAutenticacao) {
       Alert.alert("Atenção", "Preencha todos os campos.");
       return;
     }
 
     if (senha !== confirmaSenha) {
       Alert.alert("Erro", "As senhas não coincidem.");
+      return;
+    }
+
+    if (codigoAutenticacao !== CODIGO_VALIDO) {
+      Alert.alert("Erro", "Código de autenticação inválido.");
       return;
     }
 
@@ -58,6 +66,7 @@ function TelaCadastro() {
         setEmail('');
         setSenha('');
         setConfirmaSenha('');
+        setCodigoAutenticacao('');
       })
       .catch((error) => {
         console.error("❌ Erro ao salvar dados no Firebase:", error);
@@ -104,6 +113,13 @@ function TelaCadastro() {
         value={confirmaSenha}
         onChangeText={setConfirmaSenha}
         secureTextEntry
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Código de Autenticação"
+        placeholderTextColor="gray"
+        value={codigoAutenticacao}
+        onChangeText={setCodigoAutenticacao}
       />
 
       <TouchableOpacity style={styles.botao} onPress={handleCadastro}>
