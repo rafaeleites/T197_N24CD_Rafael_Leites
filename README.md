@@ -1,4 +1,4 @@
-# Projeto Registro de Ponto lado administrador 
+# Projeto Registro de Ponto (lado administrador) 
 
 ## Sumário:
 - Sobre o Projeto
