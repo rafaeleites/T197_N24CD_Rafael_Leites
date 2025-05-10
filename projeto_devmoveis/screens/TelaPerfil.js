@@ -85,7 +85,7 @@ export default function TelaPerfil() {
       <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#333' }]}>Meu Perfil</Text>
 
       <Image
-        source={{ uri: 'https://via.placeholder.com/100x100.png?text=Perfil' }}
+        source={require('../assets/avatar.png')} // Caminho para a imagem do avatar
         style={styles.avatar}
       />
 
