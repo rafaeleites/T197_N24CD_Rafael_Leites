@@ -9,16 +9,17 @@ export default function TelaRequisicoes() {
   const [tipoSelecionado, setTipoSelecionado] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [justificativaModalVisible, setJustificativaModalVisible] = useState(false);
+  const [atestadoModalVisible, setAtestadoModalVisible] = useState(false); // Novo estado para o modal de atestado
   const [requisicaoSelecionada, setRequisicaoSelecionada] = useState(null);
   const [requisicoesAtuais, setRequisicoesAtuais] = useState([
-    { nome: "Daniel Silva", tipo: "Aprovação de conta", icon: "account-tie" },
+    { nome: "Daniel Silva", tipo: "Aprovação de conta", icon: "account-tie", universidade: "UNIFOR", semestre: "5º" },
     { nome: "Carlos Pereira", tipo: "Alteração no registro de ponto", icon: "account-clock", data: "2025-05-07", detalhes: "De: 09:10 para 09:00" },
     { nome: "Mariana Lima", tipo: "Justificativa de falta", icon: "calendar-remove", data: "2025-05-06", mensagem: "Estava doente e não consegui comparecer.", atestado: true },
     { nome: "Carlos Pereira", tipo: "Justificativa de atraso", icon: "clock-alert", data: "2025-05-07", mensagem: "Trânsito intenso devido a um acidente.", atestado: false },
     { nome: "Ana Souza", tipo: "Justificativa de saída antecipada", icon: "exit-run", data: "2025-05-07", mensagem: "Precisei sair para uma consulta médica.", atestado: true },
     { nome: "Mariana Lima", tipo: "Alteração no registro de ponto", icon: "account-clock", data: "2025-05-06", detalhes: "De: 08:30 para 08:00" },
     { nome: "João Silva", tipo: "Justificativa de falta", icon: "calendar-remove", data: "2025-05-05", mensagem: "Problemas familiares urgentes.", atestado: false },
-    { nome: "Pedro Henrique", tipo: "Aprovação de conta", icon: "account-tie" },
+    { nome: "Pedro Henrique", tipo: "Aprovação de conta", icon: "account-tie", universidade: "UFC", semestre: "3º" },
     { nome: "Ana Souza", tipo: "Justificativa de atraso", icon: "clock-alert", data: "2025-05-07", mensagem: "Perdi o ônibus e precisei esperar o próximo.", atestado: true },
     { nome: "João Silva", tipo: "Justificativa de saída antecipada", icon: "exit-run", data: "2025-05-07", mensagem: "Tive que buscar meu filho na escola.", atestado: false },
   ]);
@@ -125,6 +126,16 @@ export default function TelaRequisicoes() {
               <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
                 Tipo: {getTipoCurto(requisicaoSelecionada.tipo)}
               </Text>
+              {requisicaoSelecionada.tipo === "Aprovação de conta" && (
+                <>
+                  <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                    Universidade: {requisicaoSelecionada.universidade}
+                  </Text>
+                  <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                    Semestre: {requisicaoSelecionada.semestre}
+                  </Text>
+                </>
+              )}
               {requisicaoSelecionada.data && (
                 <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
                   Data: {formatarData(requisicaoSelecionada.data)}
@@ -191,16 +202,56 @@ export default function TelaRequisicoes() {
                     name={requisicaoSelecionada.atestado ? 'check-circle' : 'close-circle'}
                     size={24}
                     color={requisicaoSelecionada.atestado ? 'green' : 'red'}
-                    style={{ marginTop: -17 }} // Subir o ícone ligeiramente
+                    style={{ marginTop: -18 }}
                   />
                 </View>
               )}
+
+              {/* Botão "Ver Atestado" */}
+              {requisicaoSelecionada.atestado && (
+                <TouchableOpacity
+                  style={[styles.justificativaButton, { backgroundColor: isDarkMode ? '#28a745' : '#28a745' }]}
+                  onPress={() => setAtestadoModalVisible(true)}
+                >
+                  <Text style={styles.buttonText}>Ver Atestado</Text>
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity
                 style={[styles.closeButton, { backgroundColor: isDarkMode ? '#007bff' : '#007bff' }]}
                 onPress={() => {
                   setJustificativaModalVisible(false);
                   setModalVisible(true);
                 }}
+              >
+                <Text style={styles.buttonText}>Fechar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Modal para exibir atestado */}
+      {atestadoModalVisible && (
+        <Modal
+          visible={atestadoModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setAtestadoModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+              <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : '#000' }]}>Atestado Médico</Text>
+              <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                Atesto que o paciente {requisicaoSelecionada.nome} esteve sob meus cuidados médicos e não pôde comparecer ao trabalho.{"\n"}
+                {"\n"}
+                Doutor Wesley Safadão, CRM 123456.{"\n"}
+                {"\n"}
+                {formatarData(requisicaoSelecionada.data)}{"\n"}
+              </Text>
+              <TouchableOpacity
+                style={[styles.closeButton, { backgroundColor: isDarkMode ? '#007bff' : '#007bff' }]}
+                onPress={() => setAtestadoModalVisible(false)}
               >
                 <Text style={styles.buttonText}>Fechar</Text>
               </TouchableOpacity>
@@ -293,7 +344,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   justificativaButton: {
-    padding: 10,
+    padding: 8,
     borderRadius: 5,
     marginVertical: 10,
     alignItems: 'center',

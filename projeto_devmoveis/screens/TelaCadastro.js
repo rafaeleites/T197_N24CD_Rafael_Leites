@@ -116,7 +116,7 @@ function TelaCadastro() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Código de Autenticação"
+        placeholder="Autenticação de Administrador"
         placeholderTextColor="gray"
         value={codigoAutenticacao}
         onChangeText={setCodigoAutenticacao}
