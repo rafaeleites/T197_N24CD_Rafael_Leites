@@ -1,5 +1,2 @@
-# Projeto 2 Aplicação registro de ponto (Administrador)
+# Projeto Registro de Ponto lado administrador H1
 
-
-Rafael da Silva Leites - 2420524
-Davi Miranda Batista da Costa - 2410441
