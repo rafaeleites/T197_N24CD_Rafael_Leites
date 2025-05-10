@@ -11,7 +11,10 @@ export default function TelaPerfil() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [adminCode, setAdminCode] = useState('');
   const navigation = useNavigation();
+
+  const ADMIN_CODE = '123456'; // Código de autenticação do administrador
 
   useEffect(() => {
     const auth = getAuth();
@@ -52,6 +55,11 @@ export default function TelaPerfil() {
   };
 
   const handlePasswordChange = () => {
+    if (adminCode !== ADMIN_CODE) {
+      Alert.alert('Erro', 'Código de autenticação inválido.');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não coincidem. Tente novamente.');
       return;
@@ -72,6 +80,7 @@ export default function TelaPerfil() {
           setModalVisible(false);
           setNewPassword('');
           setConfirmPassword('');
+          setAdminCode('');
         })
         .catch((error) => {
           console.error('Erro ao alterar a senha:', error);
@@ -130,6 +139,21 @@ export default function TelaPerfil() {
         <View style={styles.modalContainer}>
           <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
             <Text style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Alterar Senha</Text>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDarkMode ? '#444' : '#fff',
+                  color: isDarkMode ? '#fff' : '#000',
+                  borderColor: isDarkMode ? '#555' : '#ccc',
+                },
+              ]}
+              placeholder="Autenticação de Administrador"
+              placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
+              secureTextEntry
+              value={adminCode}
+              onChangeText={setAdminCode}
+            />
             <TextInput
               style={[
                 styles.input,
