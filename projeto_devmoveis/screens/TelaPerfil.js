@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TextInput } from 'react-native';
 import { getAuth, signOut, updatePassword } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function TelaPerfil() {
-  const { isDarkMode } = useTheme(); // Usar o estado do tema
-  const [user, setUser] = useState({ name: 'Carregando...', email: 'Carregando...' });
+  const { isDarkMode } = useTheme();
+  const [user, setUser] = useState({ name: 'Carregando...', email: 'Carregando...', emailVerified: false });
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,20 +20,21 @@ export default function TelaPerfil() {
     if (currentUser) {
       const email = currentUser.email;
 
-      // Buscar o nome no Realtime Database
-      const db = getDatabase();
-      const adminRef = ref(db, 'administradores');
-      onValue(adminRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          // Procurar o nome correspondente ao e-mail
-          const admin = Object.values(data).find((admin) => admin.email === email);
-          if (admin) {
-            setUser({ name: admin.nome, email: admin.email });
-          } else {
-            setUser({ name: 'Usuário não encontrado', email });
+      // Atualiza o estado do usuário
+      currentUser.reload().then(() => {
+        const db = getDatabase();
+        const adminRef = ref(db, 'administradores');
+        onValue(adminRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const admin = Object.values(data).find((admin) => admin.email === email);
+            if (admin) {
+              setUser({ name: admin.nome, email: admin.email, emailVerified: currentUser.emailVerified });
+            } else {
+              setUser({ name: 'Usuário não encontrado', email, emailVerified: currentUser.emailVerified });
+            }
           }
-        }
+        });
       });
     }
   }, []);
@@ -46,6 +47,7 @@ export default function TelaPerfil() {
       })
       .catch((error) => {
         console.error('Erro ao sair:', error);
+        Alert.alert('Erro', 'Não foi possível sair da conta.');
       });
   };
 
@@ -85,7 +87,7 @@ export default function TelaPerfil() {
       <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#333' }]}>Meu Perfil</Text>
 
       <Image
-        source={require('../assets/avatar.png')} // Caminho para a imagem do avatar
+        source={require('../assets/avatar.png')}
         style={styles.avatar}
       />
 
@@ -94,7 +96,14 @@ export default function TelaPerfil() {
       </View>
 
       <View style={[styles.infoContainer, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-        <Text style={[styles.infoText, { color: isDarkMode ? '#fff' : '#333' }]}>{user.email}</Text>
+        <Text style={[styles.infoText, { color: isDarkMode ? '#fff' : '#333' }]}>
+          {user.email} {' '}
+          {user.emailVerified ? (
+            <Text style={{ color: 'green' }}>(Verificado)</Text>
+          ) : (
+            <Text style={{ color: 'red' }}>(Não Verificado)</Text>
+          )}
+        </Text>
       </View>
 
       <TouchableOpacity
@@ -111,7 +120,7 @@ export default function TelaPerfil() {
         <Text style={[styles.buttonText, { color: isDarkMode ? '#fff' : '#333' }]}>Sair</Text>
       </TouchableOpacity>
 
-      {/* Modal para redefinir senha */}
+      {/* Modal para alterar senha */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -120,7 +129,7 @@ export default function TelaPerfil() {
       >
         <View style={styles.modalContainer}>
           <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-            <Text style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Redefinir Senha</Text>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Alterar Senha</Text>
             <TextInput
               style={[
                 styles.input,
@@ -145,7 +154,7 @@ export default function TelaPerfil() {
                   borderColor: isDarkMode ? '#555' : '#ccc',
                 },
               ]}
-              placeholder="Repita a nova senha"
+              placeholder="Confirme a nova senha"
               placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
               secureTextEntry
               value={confirmPassword}

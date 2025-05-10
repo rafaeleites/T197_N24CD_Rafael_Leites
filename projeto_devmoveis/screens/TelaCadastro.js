@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
 
@@ -41,6 +41,17 @@ function TelaCadastro() {
       const user = userCredential.user;
 
       console.log("✅ Usuário criado com UID:", user.uid);
+
+      // Envia o e-mail de verificação
+      await sendEmailVerification(user)
+        .then(() => {
+          console.log("✅ E-mail de verificação enviado.");
+          Alert.alert("Verificação", "Um e-mail de verificação foi enviado. Por favor, verifique sua caixa de entrada.");
+        })
+        .catch((error) => {
+          console.error("❌ Erro ao enviar e-mail de verificação:", error);
+          Alert.alert("Erro", "Erro ao enviar e-mail de verificação.");
+        });
 
       // Salva os dados no nó "administradores" no Realtime Database
       await set(ref(db, 'administradores/' + user.uid), {
