@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { getAuth, signOut } from 'firebase/auth';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
+import { getAuth, signOut, updatePassword } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
 
 export default function TelaPerfil() {
   const [user, setUser] = useState({ name: 'Carregando...', email: 'Carregando...' });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -44,6 +47,37 @@ export default function TelaPerfil() {
       });
   };
 
+  const handlePasswordChange = () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem. Tente novamente.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      updatePassword(currentUser, newPassword)
+        .then(() => {
+          Alert.alert('Sucesso', 'Senha alterada com sucesso!');
+          setModalVisible(false);
+          setNewPassword('');
+          setConfirmPassword('');
+        })
+        .catch((error) => {
+          console.error('Erro ao alterar a senha:', error);
+          Alert.alert('Erro', 'Não foi possível alterar a senha. Tente novamente.');
+        });
+    } else {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Meu Perfil</Text>
@@ -61,13 +95,47 @@ export default function TelaPerfil() {
         <Text style={styles.infoText}>{user.email}</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Alterar senha</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
+
+      {/* Modal para redefinir senha */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Redefinir Senha</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite a nova senha"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Repita a nova senha"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            <TouchableOpacity style={styles.modalButton} onPress={handlePasswordChange}>
+              <Text style={styles.modalButtonText}>Confirmar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.modalButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -75,7 +143,7 @@ export default function TelaPerfil() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Mesma cor de fundo da TelaNotificacoes
+    backgroundColor: '#f5f5f5',
     alignItems: 'center',
     paddingTop: 40,
     paddingHorizontal: 20,
@@ -85,7 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333', // Mesma cor do título da TelaNotificacoes
+    color: '#333',
   },
   avatar: {
     width: 100,
@@ -96,7 +164,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     width: '100%',
-    backgroundColor: '#fff', // Mesma cor dos itens da TelaNotificacoes
+    backgroundColor: '#fff',
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -105,12 +173,12 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 16,
-    color: '#333', // Mesma cor do texto dos itens da TelaNotificacoes
+    color: '#333',
     fontWeight: 'bold',
   },
   button: {
     width: '100%',
-    backgroundColor: '#fff', // Mesma cor dos itens da TelaNotificacoes
+    backgroundColor: '#fff',
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -119,7 +187,45 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#333', // Mesma cor do texto dos itens da TelaNotificacoes
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+  },
+  modalButton: {
+    width: '100%',
+    backgroundColor: '#333',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
