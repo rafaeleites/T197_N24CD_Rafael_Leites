@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { getDatabase, ref, onValue } from 'firebase/database';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 const TelaPerfilEstagiarios = () => {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
 
@@ -39,19 +41,19 @@ const TelaPerfilEstagiarios = () => {
 
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
         <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
-          <Text style={styles.nome}>
+          <Text style={[styles.nome, { color: isDarkMode ? 'white' : 'black' }]}>
             {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
           </Text>
         </TouchableOpacity>
 
         {expandido[item.uid] && (
-          <View style={styles.analise}>
-            <Text>Data de Contratação: {item.dataContratacao}</Text>
-            <Text>Instituição de Ensino: {item.instituicaoEnsino}</Text>
-            <Text>Curso: {item.curso}</Text>
-            <Text>Semestre: {item.semestre}</Text>
+          <View style={[styles.analise, { backgroundColor: isDarkMode ? '#444' : '#eef6ff' }]}>
+            <Text style={{ color: isDarkMode ? 'white' : 'black' }}>Data de Contratação: {item.dataContratacao}</Text>
+            <Text style={{ color: isDarkMode ? 'white' : 'black' }}>Instituição de Ensino: {item.instituicaoEnsino}</Text>
+            <Text style={{ color: isDarkMode ? 'white' : 'black' }}>Curso: {item.curso}</Text>
+            <Text style={{ color: isDarkMode ? 'white' : 'black' }}>Semestre: {item.semestre}</Text>
           </View>
         )}
       </View>
@@ -59,21 +61,22 @@ const TelaPerfilEstagiarios = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f2f2f2' }]}>
       <View>
-        <Text style={styles.titulo}>Lista de Estagiários</Text>
-        
+        <Text style={[styles.titulo, { color: isDarkMode ? 'white' : 'black' }]}>Lista de Estagiários</Text>
       </View>
 
-      
-      <View >
-
+      <View>
         <FlatList
           data={funcionarios}
           keyExtractor={(item) => item.uid}
           renderItem={renderItem}
           contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-          ListEmptyComponent={<Text style={styles.vazio}>Nenhum funcionário encontrado</Text>}
+          ListEmptyComponent={
+            <Text style={[styles.vazio, { color: isDarkMode ? '#ccc' : '#999' }]}>
+              Nenhum funcionário encontrado
+            </Text>
+          }
         />
       </View>
     </View>
@@ -83,7 +86,6 @@ const TelaPerfilEstagiarios = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
     paddingHorizontal: 10,
     paddingTop: 20,
   },
@@ -93,7 +95,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#fff',
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
@@ -111,19 +112,16 @@ const styles = StyleSheet.create({
   analise: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: '#eef6ff',
     borderRadius: 8,
   },
   vazio: {
     fontStyle: 'italic',
-    color: '#999',
     textAlign: 'center',
     marginTop: 20,
   },
   titulo: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#000',
     textAlign: 'center',
     marginBottom: 20,
   },

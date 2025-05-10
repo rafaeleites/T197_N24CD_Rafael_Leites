@@ -53,45 +53,6 @@ const TelaModerador = () => {
     }));
   };
 
-  const calcularTotalHoras = (entrada, saida, pausas) => {
-    if (!entrada || !saida) return '0h0min';
-
-    try {
-      const [horaEntrada, minutoEntrada] = entrada.split(':').map(Number);
-      const [horaSaida, minutoSaida] = saida.split(':').map(Number);
-
-      const inicio = new Date(0, 0, 0, horaEntrada, minutoEntrada);
-      const fim = new Date(0, 0, 0, horaSaida, minutoSaida);
-
-      let totalMinutos = (fim - inicio) / (1000 * 60);
-
-      if (pausas && pausas.length > 0) {
-        const totalPausasMinutos = pausas.reduce((total, pausa) => {
-          const [inicioPausa, fimPausa] = pausa.split('-');
-          const [horaInicioPausa, minutoInicioPausa] = inicioPausa.split(':').map(Number);
-          const [horaFimPausa, minutoFimPausa] = fimPausa.split(':').map(Number);
-
-          const inicioPausaDate = new Date(0, 0, 0, horaInicioPausa, minutoInicioPausa);
-          const fimPausaDate = new Date(0, 0, 0, horaFimPausa, minutoFimPausa);
-
-          return total + (fimPausaDate - inicioPausaDate) / (1000 * 60);
-        }, 0);
-
-        totalMinutos -= totalPausasMinutos;
-      }
-
-      totalMinutos = Math.max(totalMinutos, 0);
-
-      const horas = Math.floor(totalMinutos / 60);
-      const minutos = Math.round(totalMinutos % 60);
-
-      return `${horas}h${minutos}min`;
-    } catch (error) {
-      console.error('Erro ao calcular total de horas:', error);
-      return '0h0min';
-    }
-  };
-
   const salvarEdicao = (uid, data) => {
     const db = getDatabase();
     const registroRef = ref(db, `estagiarios/cargaHoraria/${uid}/registros/${data}`);
@@ -114,15 +75,6 @@ const TelaModerador = () => {
         Alert.alert('Erro', 'Não foi possível atualizar o registro.');
         console.error(error);
       });
-  };
-
-  const formatarData = (data) => {
-    const partes = data.split('-');
-    if (partes.length === 3) {
-      const [ano, mes, dia] = partes;
-      return `${dia}-${mes}-${ano}`;
-    }
-    return data;
   };
 
   const renderItem = ({ item }) => {
@@ -152,7 +104,7 @@ const TelaModerador = () => {
                 >
                   <TouchableOpacity onPress={() => toggleExpandido(`${item.uid}_${data}`)}>
                     <Text style={[styles.data, { color: isDarkMode ? 'white' : 'black' }]}>
-                      {formatarData(data)}
+                      {data}
                     </Text>
                   </TouchableOpacity>
 
@@ -210,9 +162,6 @@ const TelaModerador = () => {
                           </Text>
                           <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
                             Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}
-                          </Text>
-                          <Text style={{ color: isDarkMode ? 'white' : 'black' }}>
-                            Total: {calcularTotalHoras(info.entrada, info.saida, info.pausas)}
                           </Text>
                           <TouchableOpacity
                             style={[

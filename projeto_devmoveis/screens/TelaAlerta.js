@@ -1,42 +1,46 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 function TelaAlerta() {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [notificacaoAtraso, setNotificacaoAtraso] = useState(true);
   const [notificacaoFalta, setNotificacaoFalta] = useState(true);
   const [notificacaoExtra, setNotificacaoExtra] = useState(true);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Configurar Alertas</Text>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f5f5f5' }]}>
+      <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#000' }]}>Configurar Alertas</Text>
 
-      <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar atrasos</Text>
+      <View style={[styles.option, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+        <Text style={[styles.optionText, { color: isDarkMode ? '#fff' : '#000' }]}>Notificar atrasos</Text>
         <Switch
           value={notificacaoAtraso}
           onValueChange={setNotificacaoAtraso}
-          thumbColor={notificacaoAtraso ? '#ccc' : '#ccc'}
-          trackColor={{ false: '#767577', true: '#f0dc82' }}
+          thumbColor={notificacaoAtraso ? (isDarkMode ? '#666' : '#ccc') : (isDarkMode ? '#444' : '#ccc')}
+          trackColor={{ false: '#767577', true: isDarkMode ? '#81b0ff' : '#f0dc82' }}
         />
       </View>
 
-      <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar faltas</Text>
+      <View style={[styles.option, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+        <Text style={[styles.optionText, { color: isDarkMode ? '#fff' : '#000' }]}>Notificar faltas</Text>
         <Switch
           value={notificacaoFalta}
           onValueChange={setNotificacaoFalta}
-          thumbColor={notificacaoFalta ? '#ccc' : '#ccc'}
-          trackColor={{ false: '#767577', true: '#f0dc82' }}
+          thumbColor={notificacaoFalta ? (isDarkMode ? '#666' : '#ccc') : (isDarkMode ? '#444' : '#ccc')}
+          trackColor={{ false: '#767577', true: isDarkMode ? '#81b0ff' : '#f0dc82' }}
         />
       </View>
 
-      <View style={styles.option}>
-        <Text style={styles.optionText}>Notificar saídas antes do previsto</Text>
+      <View style={[styles.option, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+        <Text style={[styles.optionText, { color: isDarkMode ? '#fff' : '#000' }]}>
+          Notificar saídas antes do previsto
+        </Text>
         <Switch
           value={notificacaoExtra}
           onValueChange={setNotificacaoExtra}
-          thumbColor={notificacaoExtra ? '#ccc' : '#ccc'}
-          trackColor={{ false: '#767577', true: '#f0dc82' }}
+          thumbColor={notificacaoExtra ? (isDarkMode ? '#666' : '#ccc') : (isDarkMode ? '#444' : '#ccc')}
+          trackColor={{ false: '#767577', true: isDarkMode ? '#81b0ff' : '#f0dc82' }}
         />
       </View>
     </View>
@@ -46,22 +50,18 @@ function TelaAlerta() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5', // Alterado para o padrão
     padding: 20,
   },
   title: {
-    fontSize: 26, // Fonte ajustada para manter o padrão
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#000', // Texto em preto
     textAlign: 'center',
     marginBottom: 30,
-    backgroundColor: 'transparent', // Fundo branco removido
   },
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-    color: '#000',
     flex: 1,
     marginRight: 10,
   },

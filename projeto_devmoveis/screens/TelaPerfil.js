@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, TextInput, Aler
 import { getAuth, signOut, updatePassword } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 export default function TelaPerfil() {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [user, setUser] = useState({ name: 'Carregando...', email: 'Carregando...' });
   const [modalVisible, setModalVisible] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -79,28 +81,34 @@ export default function TelaPerfil() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Meu Perfil</Text>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f5f5f5' }]}>
+      <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#333' }]}>Meu Perfil</Text>
 
       <Image
         source={{ uri: 'https://via.placeholder.com/100x100.png?text=Perfil' }}
         style={styles.avatar}
       />
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>{user.name}</Text>
+      <View style={[styles.infoContainer, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+        <Text style={[styles.infoText, { color: isDarkMode ? '#fff' : '#333' }]}>{user.name}</Text>
       </View>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>{user.email}</Text>
+      <View style={[styles.infoContainer, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+        <Text style={[styles.infoText, { color: isDarkMode ? '#fff' : '#333' }]}>{user.email}</Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>Alterar senha</Text>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: isDarkMode ? '#444' : '#fff' }]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={[styles.buttonText, { color: isDarkMode ? '#fff' : '#333' }]}>Alterar senha</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Sair</Text>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: isDarkMode ? '#444' : '#fff' }]}
+        onPress={handleLogout}
+      >
+        <Text style={[styles.buttonText, { color: isDarkMode ? '#fff' : '#333' }]}>Sair</Text>
       </TouchableOpacity>
 
       {/* Modal para redefinir senha */}
@@ -111,26 +119,48 @@ export default function TelaPerfil() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Redefinir Senha</Text>
+          <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+            <Text style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Redefinir Senha</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDarkMode ? '#444' : '#fff',
+                  color: isDarkMode ? '#fff' : '#000',
+                  borderColor: isDarkMode ? '#555' : '#ccc',
+                },
+              ]}
               placeholder="Digite a nova senha"
+              placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
             />
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDarkMode ? '#444' : '#fff',
+                  color: isDarkMode ? '#fff' : '#000',
+                  borderColor: isDarkMode ? '#555' : '#ccc',
+                },
+              ]}
               placeholder="Repita a nova senha"
+              placeholderTextColor={isDarkMode ? '#aaa' : '#888'}
               secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
             />
-            <TouchableOpacity style={styles.modalButton} onPress={handlePasswordChange}>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: isDarkMode ? '#555' : '#333' }]}
+              onPress={handlePasswordChange}
+            >
               <Text style={styles.modalButtonText}>Confirmar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: isDarkMode ? '#555' : '#333' }]}
+              onPress={() => setModalVisible(false)}
+            >
               <Text style={styles.modalButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -143,7 +173,6 @@ export default function TelaPerfil() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     alignItems: 'center',
     paddingTop: 40,
     paddingHorizontal: 20,
@@ -153,7 +182,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
   },
   avatar: {
     width: 100,
@@ -164,7 +192,6 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     width: '100%',
-    backgroundColor: '#fff',
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -173,12 +200,10 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 16,
-    color: '#333',
     fontWeight: 'bold',
   },
   button: {
     width: '100%',
-    backgroundColor: '#fff',
     paddingVertical: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -187,7 +212,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#333',
     fontWeight: 'bold',
   },
   modalContainer: {
@@ -198,7 +222,6 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
-    backgroundColor: '#fff',
     borderRadius: 8,
     padding: 20,
     alignItems: 'center',
@@ -211,14 +234,12 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
     marginBottom: 15,
   },
   modalButton: {
     width: '100%',
-    backgroundColor: '#333',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',

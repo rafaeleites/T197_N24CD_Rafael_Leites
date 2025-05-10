@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getDatabase, ref, onValue } from 'firebase/database';
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 const TelaRegistro = () => {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [funcionarios, setFuncionarios] = useState([]);
   const [expandido, setExpandido] = useState({});
   const [filtroMes, setFiltroMes] = useState('7dias');
@@ -109,20 +111,20 @@ const TelaRegistro = () => {
     const corDiferenca = diferenca < 0 ? styles.faltando : styles.sobrando;
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
         <TouchableOpacity onPress={() => toggleExpandido(item.uid)}>
-          <Text style={styles.nome}>
+          <Text style={[styles.nome, { color: isDarkMode ? 'white' : '#000' }]}>
             {item.nome} <Text style={styles.seta}>{expandido[item.uid] ? '▲' : '▼'}</Text>
           </Text>
         </TouchableOpacity>
 
-        <Text style={styles.info}>
+        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
           Dias trabalhados: {diasTrabalhados}
         </Text>
-        <Text style={styles.info}>
+        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
           Carga horária esperada: {minutosParaTexto(minutosEsperados)}
         </Text>
-        <Text style={styles.info}>
+        <Text style={[styles.info, { color: isDarkMode ? '#ccc' : '#000' }]}>
           Carga horária realizada: {minutosParaTexto(totalMinutos)}
         </Text>
         <Text style={[styles.info, corDiferenca]}>
@@ -135,16 +137,34 @@ const TelaRegistro = () => {
           <View style={styles.registros}>
             {registrosFiltrados.length > 0 ? (
               registrosFiltrados.map(([data, info]) => (
-                <View key={data} style={styles.registro}>
-                  <Text style={styles.data}>{formatarData(data)}</Text>
-                  <Text>Entrada: {info.entrada || 'N/A'}</Text>
-                  <Text>Saída: {info.saida || 'N/A'}</Text>
-                  <Text>Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}</Text>
-                  <Text>Total: {minutosParaTexto(calcularMinutosTotais(info.entrada, info.saida, info.pausas))}</Text>
+                <View
+                  key={data}
+                  style={[
+                    styles.registro,
+                    { backgroundColor: isDarkMode ? '#444' : '#f9f9f9' },
+                  ]}
+                >
+                  <Text style={[styles.data, { color: isDarkMode ? '#fff' : '#000' }]}>
+                    {formatarData(data)}
+                  </Text>
+                  <Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>
+                    Entrada: {info.entrada || 'N/A'}
+                  </Text>
+                  <Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>
+                    Saída: {info.saida || 'N/A'}
+                  </Text>
+                  <Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>
+                    Pausas: {info.pausas ? info.pausas.join(', ') : 'Nenhuma'}
+                  </Text>
+                  <Text style={{ color: isDarkMode ? '#ccc' : '#000' }}>
+                    Total: {minutosParaTexto(calcularMinutosTotais(info.entrada, info.saida, info.pausas))}
+                  </Text>
                 </View>
               ))
             ) : (
-              <Text style={styles.vazio}>Nenhum registro encontrado</Text>
+              <Text style={[styles.vazio, { color: isDarkMode ? '#aaa' : '#999' }]}>
+                Nenhum registro encontrado
+              </Text>
             )}
           </View>
         )}
@@ -153,11 +173,14 @@ const TelaRegistro = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f2f2f2' }]}>
       <Picker
         selectedValue={filtroMes}
         onValueChange={(itemValue) => setFiltroMes(itemValue)}
-        style={styles.picker}
+        style={[
+          styles.picker,
+          { backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#000' },
+        ]}
       >
         <Picker.Item label="Últimos 7 dias" value="7dias" />
         <Picker.Item label="Janeiro" value="01" />
@@ -179,7 +202,11 @@ const TelaRegistro = () => {
         keyExtractor={(item) => item.uid}
         renderItem={renderItem}
         contentContainerStyle={funcionarios.length === 0 && styles.emptyContainer}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhum estagiário encontrado</Text>}
+        ListEmptyComponent={
+          <Text style={[styles.vazio, { color: isDarkMode ? '#aaa' : '#999' }]}>
+            Nenhum estagiário encontrado
+          </Text>
+        }
       />
     </View>
   );
@@ -188,13 +215,11 @@ const TelaRegistro = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
     paddingHorizontal: 10,
     paddingTop: 20,
   },
   picker: {
     marginBottom: 20,
-    backgroundColor: '#fff',
     borderRadius: 5,
   },
   emptyContainer: {
@@ -203,7 +228,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#fff',
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
@@ -234,10 +258,8 @@ const styles = StyleSheet.create({
   registro: {
     marginBottom: 10,
     padding: 10,
-    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
   },
   data: {
     fontWeight: 'bold',
@@ -245,7 +267,6 @@ const styles = StyleSheet.create({
   },
   vazio: {
     fontStyle: 'italic',
-    color: '#999',
     textAlign: 'center',
     marginTop: 20,
   },

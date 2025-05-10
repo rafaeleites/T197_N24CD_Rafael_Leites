@@ -2,14 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-const cor1 = '#FFFFFF'; // Branco
-const cor2 = "#f0dc82"; // Dourado
-const cor3 = '#000000'; // Preto
-const cor4 = '#FFFFFF'; // Branco
-const cor5 = '#B8860B'; // Dourado ?
+import { useTheme } from '../contexts/ThemeContext'; // Importar o contexto do tema
 
 export default function TelaRequisicoes() {
+  const { isDarkMode } = useTheme(); // Usar o estado do tema
   const [tipoSelecionado, setTipoSelecionado] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [justificativaModalVisible, setJustificativaModalVisible] = useState(false);
@@ -69,16 +65,19 @@ export default function TelaRequisicoes() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f5f5f5' }]}>
       {/* Título */}
-      <Text style={styles.title}>Requisições</Text>
+      <Text style={[styles.title, { color: isDarkMode ? 'white' : '#333' }]}>Requisições</Text>
 
       {/* Filtro como Picker */}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={tipoSelecionado}
           onValueChange={(itemValue) => setTipoSelecionado(itemValue)}
-          style={styles.picker}
+          style={[
+            styles.picker,
+            { backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? 'white' : '#000' },
+          ]}
         >
           <Picker.Item label="Todos" value="" />
           <Picker.Item label="Aprovação de conta" value="Aprovação de conta" />
@@ -93,11 +92,16 @@ export default function TelaRequisicoes() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {requisicoesFiltradas.map((item, index) => (
           <TouchableOpacity key={index} onPress={() => handleRequisicaoPress(item)}>
-            <View style={styles.card}>
-              <MaterialCommunityIcons name={item.icon} size={24} color={cor3} style={styles.avatar} />
+            <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+              <MaterialCommunityIcons
+                name={item.icon}
+                size={24}
+                color={isDarkMode ? 'white' : '#000'}
+                style={styles.avatar}
+              />
               <View>
-                <Text style={styles.nome}>{item.nome}</Text>
-                <Text style={styles.tipo}>{item.tipo}</Text>
+                <Text style={[styles.nome, { color: isDarkMode ? 'white' : '#000' }]}>{item.nome}</Text>
+                <Text style={[styles.tipo, { color: isDarkMode ? '#ccc' : '#666' }]}>{item.tipo}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -113,36 +117,49 @@ export default function TelaRequisicoes() {
           onRequestClose={() => setModalVisible(false)}
         >
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Requisição</Text>
-              <Text style={styles.modalText}>Nome: {requisicaoSelecionada.nome}</Text>
-              <Text style={styles.modalText}>Tipo: {getTipoCurto(requisicaoSelecionada.tipo)}</Text>
+            <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+              <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : '#000' }]}>Requisição</Text>
+              <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                Nome: {requisicaoSelecionada.nome}
+              </Text>
+              <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                Tipo: {getTipoCurto(requisicaoSelecionada.tipo)}
+              </Text>
               {requisicaoSelecionada.data && (
-                <Text style={styles.modalText}>Data: {formatarData(requisicaoSelecionada.data)}</Text>
-              )}
-              {requisicaoSelecionada.detalhes && (
-                <Text style={styles.modalText}>
-                  <Text style={{ color: 'red' }}>
-                    {requisicaoSelecionada.detalhes.split('para')[0].trim()}
-                  </Text>{' '}
-                  <Text style={{ color: 'blue' }}>
-                    para {requisicaoSelecionada.detalhes.split('para')[1].trim()}
-                  </Text>
+                <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                  Data: {formatarData(requisicaoSelecionada.data)}
                 </Text>
               )}
+              {requisicaoSelecionada.detalhes && (
+                <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                  {requisicaoSelecionada.detalhes}
+                </Text>
+              )}
+
+              {/* Botão "Ver Justificativa" */}
               {requisicaoSelecionada.mensagem && (
                 <TouchableOpacity
-                  style={styles.justificativaButton}
-                  onPress={() => setJustificativaModalVisible(true)}
+                  style={[styles.justificativaButton, { backgroundColor: isDarkMode ? '#007bff' : '#007bff' }]}
+                  onPress={() => {
+                    setJustificativaModalVisible(true);
+                    setModalVisible(false);
+                  }}
                 >
                   <Text style={styles.buttonText}>Ver Justificativa</Text>
                 </TouchableOpacity>
               )}
+
               <View style={styles.modalButtons}>
-                <TouchableOpacity style={styles.approveButton} onPress={handleAprovar}>
+                <TouchableOpacity
+                  style={[styles.approveButton, { backgroundColor: isDarkMode ? '#28a745' : '#28a745' }]}
+                  onPress={handleAprovar}
+                >
                   <Text style={styles.buttonText}>Aprovar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.rejectButton} onPress={handleReprovar}>
+                <TouchableOpacity
+                  style={[styles.rejectButton, { backgroundColor: isDarkMode ? '#dc3545' : '#dc3545' }]}
+                  onPress={handleReprovar}
+                >
                   <Text style={styles.buttonText}>Reprovar</Text>
                 </TouchableOpacity>
               </View>
@@ -151,8 +168,8 @@ export default function TelaRequisicoes() {
         </Modal>
       )}
 
-      {/* Modal para Justificativa */}
-      {requisicaoSelecionada && (
+      {/* Modal para exibir justificativa */}
+      {justificativaModalVisible && (
         <Modal
           visible={justificativaModalVisible}
           transparent={true}
@@ -160,19 +177,30 @@ export default function TelaRequisicoes() {
           onRequestClose={() => setJustificativaModalVisible(false)}
         >
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Justificativa</Text>
-              {requisicaoSelecionada.mensagem && (
-                <Text style={styles.modalText}>{requisicaoSelecionada.mensagem}</Text>
-              )}
+            <View style={[styles.modalContent, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
+              <Text style={[styles.modalTitle, { color: isDarkMode ? 'white' : '#000' }]}>Justificativa</Text>
+              <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
+                {requisicaoSelecionada.mensagem}
+              </Text>
               {requisicaoSelecionada.atestado !== undefined && (
-                <Text style={styles.modalText}>
-                  Possui Atestado? {requisicaoSelecionada.atestado ? "Sim" : "Não"}
-                </Text>
-)}
+                <View style={styles.atestadoContainer}>
+                  <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000', marginRight: 8 }]}>
+                    Possui atestado?
+                  </Text>
+                  <MaterialCommunityIcons
+                    name={requisicaoSelecionada.atestado ? 'check-circle' : 'close-circle'}
+                    size={24}
+                    color={requisicaoSelecionada.atestado ? 'green' : 'red'}
+                    style={{ marginTop: -17 }} // Subir o ícone ligeiramente
+                  />
+                </View>
+              )}
               <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setJustificativaModalVisible(false)}
+                style={[styles.closeButton, { backgroundColor: isDarkMode ? '#007bff' : '#007bff' }]}
+                onPress={() => {
+                  setJustificativaModalVisible(false);
+                  setModalVisible(true);
+                }}
               >
                 <Text style={styles.buttonText}>Fechar</Text>
               </TouchableOpacity>
@@ -187,13 +215,11 @@ export default function TelaRequisicoes() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     padding: 10,
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: cor3,
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -202,9 +228,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   picker: {
-    backgroundColor: cor4,
     borderRadius: 5,
-    color: cor3,
     height: 48,
   },
   scrollContainer: {
@@ -213,7 +237,6 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: cor4,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
@@ -224,11 +247,9 @@ const styles = StyleSheet.create({
   nome: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: cor3,
   },
   tipo: {
     fontSize: 14,
-    color: cor3,
   },
   modalContainer: {
     flex: 1,
@@ -237,7 +258,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: cor4,
     padding: 20,
     borderRadius: 10,
     width: '80%',
@@ -247,12 +267,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: cor3,
   },
   modalText: {
     fontSize: 16,
     marginBottom: 20,
-    color: cor3,
     textAlign: 'justify',
   },
   modalButtons: {
@@ -261,7 +279,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   approveButton: {
-    backgroundColor: '#28a745', // Verde
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -269,7 +286,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rejectButton: {
-    backgroundColor: '#dc3545', // Vermelho
     padding: 10,
     borderRadius: 5,
     flex: 1,
@@ -277,21 +293,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   justificativaButton: {
-    backgroundColor: '#17a2b8', // Azul claro
-    padding: 6,
-    borderRadius: 8,
-    marginBottom: 8, 
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
     alignItems: 'center',
   },
   closeButton: {
-    backgroundColor: cor5,
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     alignItems: 'center',
   },
+  atestadoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
   buttonText: {
-    color: cor1,
+    color: 'white',
     fontWeight: 'bold',
   },
 });
