@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TextInput } from 'react-native';
-import { getAuth, signOut, updatePassword } from 'firebase/auth';
+import { getAuth, signOut, updatePassword, sendEmailVerification } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../contexts/ThemeContext';
@@ -91,6 +91,24 @@ export default function TelaPerfil() {
     }
   };
 
+  const handleResendVerificationEmail = () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      sendEmailVerification(currentUser)
+        .then(() => {
+          Alert.alert('Sucesso', 'E-mail de verificação reenviado. Verifique sua caixa de entrada.');
+        })
+        .catch((error) => {
+          console.error('Erro ao reenviar o e-mail de verificação:', error);
+          Alert.alert('Erro', 'Não foi possível reenviar o e-mail de verificação. Tente novamente.');
+        });
+    } else {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#000' : '#f5f5f5' }]}>
       <Text style={[styles.title, { color: isDarkMode ? '#fff' : '#333' }]}>Meu Perfil</Text>
@@ -113,6 +131,11 @@ export default function TelaPerfil() {
             <Text style={{ color: 'red' }}>(Não Verificado)</Text>
           )}
         </Text>
+        {!user.emailVerified && (
+          <TouchableOpacity onPress={handleResendVerificationEmail}>
+            <Text style={[styles.resendText, { color: 'green' }]}>Reenviar e-mail</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <TouchableOpacity
@@ -234,6 +257,12 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  resendText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 5,
+    textDecorationLine: 'underline', // Indica que é clicável
   },
   button: {
     width: '100%',

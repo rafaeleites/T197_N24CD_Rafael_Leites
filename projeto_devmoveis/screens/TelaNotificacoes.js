@@ -15,7 +15,6 @@ const TelaNotificacoes = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
-  // Função para formatar a data no padrão DD-MM-AAAA
   const formatarData = (data) => {
     const [ano, mes, dia] = data.split('-');
     return `${dia}-${mes}-${ano}`;
@@ -52,8 +51,7 @@ const TelaNotificacoes = () => {
               const inicio = new Date(0, 0, 0, hEntrada, mEntrada);
               const fim = new Date(0, 0, 0, hSaida, mSaida);
 
-              // Calcula o total de horas trabalhadas, subtraindo 1 hora de almoço
-              const totalMinutos = (fim - inicio) / 60000 - 60; // Subtraindo 60 minutos de almoço
+              const totalMinutos = (fim - inicio) / 60000 - 60;
               const totalHoras = totalMinutos / 60;
 
               if (hEntrada > 9 || (hEntrada === 9 && mEntrada > 0)) {
@@ -90,14 +88,19 @@ const TelaNotificacoes = () => {
     return () => unsubscribe();
   }, []);
 
-  const filtrarPorMes = (notificacoes) => {
-    if (!mesSelecionado || mesSelecionado === '') return notificacoes;
-    return notificacoes.filter((item) => item.data.split('-')[1] === mesSelecionado);
-  };
+  const filtrarEOrdenar = (tipo) => {
+    const filtradas = notificacoes
+      .filter((item) => item.tipo === tipo)
+      .filter((item) => !mesSelecionado || item.data.split('-')[1] === mesSelecionado)
+      .filter((item) => !funcionarioSelecionado || item.funcionario === funcionarioSelecionado);
 
-  const filtrarPorFuncionario = (notificacoes) => {
-    if (!funcionarioSelecionado || funcionarioSelecionado === '') return notificacoes;
-    return notificacoes.filter((item) => item.funcionario === funcionarioSelecionado);
+    return filtradas.sort((a, b) => {
+      const [anoA, mesA, diaA] = a.data.split('-').map(Number);
+      const [anoB, mesB, diaB] = b.data.split('-').map(Number);
+      const dataA = new Date(anoA, mesA - 1, diaA);
+      const dataB = new Date(anoB, mesB - 1, diaB);
+      return dataB - dataA;
+    });
   };
 
   const handlePress = (item) => {
@@ -109,7 +112,6 @@ const TelaNotificacoes = () => {
     <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : '#f5f5f5' }]}>
       <Text style={[styles.title, { color: isDarkMode ? 'white' : '#333' }]}>Notificações</Text>
 
-      {/* Filtro por Funcionário */}
       <Picker
         selectedValue={funcionarioSelecionado}
         onValueChange={(itemValue) => setFuncionarioSelecionado(itemValue)}
@@ -121,7 +123,6 @@ const TelaNotificacoes = () => {
         ))}
       </Picker>
 
-      {/* Filtro por Mês */}
       <Picker
         selectedValue={mesSelecionado}
         onValueChange={(itemValue) => setMesSelecionado(itemValue)}
@@ -131,20 +132,28 @@ const TelaNotificacoes = () => {
         <Picker.Item label="Janeiro" value="01" />
         <Picker.Item label="Fevereiro" value="02" />
         <Picker.Item label="Março" value="03" />
+        <Picker.Item label="Abril" value="04" />
+        <Picker.Item label="Maio" value="05" />
+        <Picker.Item label="Junho" value="06" />
+        <Picker.Item label="Julho" value="07" />
+        <Picker.Item label="Agosto" value="08" />
+        <Picker.Item label="Setembro" value="09" />
+        <Picker.Item label="Outubro" value="10" />
+        <Picker.Item label="Novembro" value="11" />
+        <Picker.Item label="Dezembro" value="12" />
       </Picker>
 
-      {/* Atrasos */}
       <TouchableOpacity onPress={() => setExpandAtrasos(!expandAtrasos)}>
         <View style={[styles.sectionHeader, { borderBottomColor: isDarkMode ? '#555' : '#ddd' }]}>
           <Text style={[styles.sectionTitle, { color: isDarkMode ? 'white' : '#555' }]}>Atrasos</Text>
           <Text style={[styles.notificationCount, { color: isDarkMode ? '#ccc' : '#888' }]}>
-            {filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Atraso'))).length}
+            {filtrarEOrdenar('Atraso').length}
           </Text>
         </View>
       </TouchableOpacity>
       {expandAtrasos && (
         <FlatList
-          data={filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Atraso')))}
+          data={filtrarEOrdenar('Atraso')}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handlePress(item)}>
@@ -158,18 +167,17 @@ const TelaNotificacoes = () => {
         />
       )}
 
-      {/* Faltas */}
       <TouchableOpacity onPress={() => setExpandFaltas(!expandFaltas)}>
         <View style={[styles.sectionHeader, { borderBottomColor: isDarkMode ? '#555' : '#ddd' }]}>
           <Text style={[styles.sectionTitle, { color: isDarkMode ? 'white' : '#555' }]}>Faltas</Text>
           <Text style={[styles.notificationCount, { color: isDarkMode ? '#ccc' : '#888' }]}>
-            {filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Falta'))).length}
+            {filtrarEOrdenar('Falta').length}
           </Text>
         </View>
       </TouchableOpacity>
       {expandFaltas && (
         <FlatList
-          data={filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Falta')))}
+          data={filtrarEOrdenar('Falta')}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handlePress(item)}>
@@ -183,18 +191,17 @@ const TelaNotificacoes = () => {
         />
       )}
 
-      {/* Saídas */}
       <TouchableOpacity onPress={() => setExpandSaidas(!expandSaidas)}>
         <View style={[styles.sectionHeader, { borderBottomColor: isDarkMode ? '#555' : '#ddd' }]}>
           <Text style={[styles.sectionTitle, { color: isDarkMode ? 'white' : '#555' }]}>Saídas</Text>
           <Text style={[styles.notificationCount, { color: isDarkMode ? '#ccc' : '#888' }]}>
-            {filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Saída'))).length}
+            {filtrarEOrdenar('Saída').length}
           </Text>
         </View>
       </TouchableOpacity>
       {expandSaidas && (
         <FlatList
-          data={filtrarPorMes(filtrarPorFuncionario(notificacoes.filter((item) => item.tipo === 'Saída')))}
+          data={filtrarEOrdenar('Saída')}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handlePress(item)}>
@@ -208,7 +215,6 @@ const TelaNotificacoes = () => {
         />
       )}
 
-      {/* Modal */}
       <Modal
         visible={modalVisible}
         transparent={true}

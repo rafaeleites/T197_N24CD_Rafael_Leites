@@ -245,7 +245,7 @@ export default function TelaRequisicoes() {
               <Text style={[styles.modalText, { color: isDarkMode ? 'white' : '#000' }]}>
                 Atesto que o paciente {requisicaoSelecionada.nome} esteve sob meus cuidados médicos e não pôde comparecer ao trabalho.{"\n"}
                 {"\n"}
-                Doutor Wesley Safadão, CRM 134146.{"\n"}
+                Doutor Ronald Lehman, CRM 134146.{"\n"}
                 {"\n"}
                 {formatarData(requisicaoSelecionada.data)}{"\n"}
               </Text>
