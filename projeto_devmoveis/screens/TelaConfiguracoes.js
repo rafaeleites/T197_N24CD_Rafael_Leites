@@ -8,9 +8,9 @@ function TelaConfiguracoes() {
   const [modalVisible, setModalVisible] = useState(false);
   const [notificationModalVisible, setNotificationModalVisible] = useState(false);
   const [notifications, setNotifications] = useState({
-    atrasos: false,
-    faltas: false,
-    saidas: false,
+    atrasos: true,
+    faltas: true,
+    saidas: true,
   });
   const navigation = useNavigation();
 

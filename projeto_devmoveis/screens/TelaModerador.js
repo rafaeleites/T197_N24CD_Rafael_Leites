@@ -86,6 +86,11 @@ const TelaModerador = () => {
       });
   };
 
+  const formatarData = (data) => {
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}-${mes}-${ano}`;
+  };
+
   const renderItem = ({ item }) => {
     return (
       <View style={[styles.card, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
@@ -117,7 +122,7 @@ const TelaModerador = () => {
                 >
                   <TouchableOpacity onPress={() => toggleExpandido(`${item.uid}_${data}`)}>
                     <Text style={[styles.data, { color: isDarkMode ? 'white' : 'black' }]}>
-                      {data}
+                      {formatarData(data)}
                     </Text>
                   </TouchableOpacity>
 
