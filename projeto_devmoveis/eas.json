@@ -11,14 +11,14 @@
     "preview": {
       "distribution": "store",
       "android": {
-        "buildType": "apk" // Garantir que o build seja um APK
+        "buildType": "apk" 
       }
     },
     "production": {
       "autoIncrement": true,
       "distribution": "store",
       "android": {
-        "buildType": "app-bundle" // Corrigido para gerar um AAB
+        "buildType": "app-bundle"
       }
     }
   },
