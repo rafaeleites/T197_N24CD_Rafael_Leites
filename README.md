@@ -24,7 +24,8 @@ Ele permite o acompanhamento da carga horária, horas extras, faltas, histórico
 - Relatórios de entrada e saída
 - Alerta de carga horária excedida
 - Aprovação/rejeição de solicitações de alteração de ponto
-- 
+- Editar os dados dos estagiários
+  
 ### 💻Tecnologias utilizadas:
 - Front-end: React Native / Expo 
 - Back-end: Node.js 
@@ -64,13 +65,10 @@ Essa é a estrutura principal do projeto
 
 ## Tela principais e principais funcionalidades
 
-![WhatsApp Image 2025-05-16 at 7 02 06 PM (2)](https://github.com/user-attachments/assets/054ab6d4-2599-491c-bbc8-0f2eaedfcfab)
+![Design sem nome](https://github.com/user-attachments/assets/193a67f5-eb16-4876-bda2-1751603fe4d2)
 
-Tela de moderador para alterar todos os dados dos estagiários
-![WhatsApp Image 2025-05-16 at 7 02 06 PM (1)](https://github.com/user-attachments/assets/f555dd31-5111-4743-b21c-e9c7eaead961)
 
-Tela de Registros dos estagiarios (histórico de pontos)
-![WhatsApp Image 2025-05-16 at 7 02 06 PM](https://github.com/user-attachments/assets/c850c66c-7c71-44ba-958c-b03fd8a82402)
+
 
 
 
