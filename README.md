@@ -63,12 +63,21 @@ Pressione "a" para emular no android studio se for o caso, ou scanear o QRcode p
 
 Essa é a estrutura principal do projeto
 
-## Tela principais e principais funcionalidades
+## Visão geral das telas
 
 
 
 ![Design sem nome (6)](https://github.com/user-attachments/assets/330b41de-bb97-4f52-9ddb-4c187d0d7193)
 
+
+
+
+## Intergração com banco de dados
+
+- Informações de horários
+- Justificativas
+- Informações do adminstrador
+- Informações dos estagiários
 
 
 
