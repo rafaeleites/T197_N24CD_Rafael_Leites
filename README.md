@@ -6,10 +6,8 @@
 - Tecnologias Utilizadas
 - Como Rodar o Projeto
 - Estrutura do Projeto
-- Telas do Sistema (ou protótipos)
-- API / Integração com Banco de Dados
-- Contribuição
-- Licença
+- Telas do Sistema 
+- Integração com Banco de Dados
 
 ## 📌Sobre o projeto
 Este projeto tem como objetivo fornecer uma interface para administradores de escritórios visualizarem e 
@@ -72,12 +70,15 @@ Essa é a estrutura principal do projeto
 
 
 
-## Intergração com banco de dados
+## 🗄️ Integração com Banco de Dados
 
-- Informações de horários
-- Justificativas
-- Informações do adminstrador
-- Informações dos estagiários
+O aplicativo está integrado ao Firebase, onde são armazenadas e gerenciadas diversas informações importantes para o funcionamento do sistema. Abaixo estão os principais dados manipulados:
+
+- 📆 **Horários de ponto:** Registro de entrada e saída dos estagiários.
+- 📝 **Justificativas:** Solicitações de alteração de ponto feitas pelos estagiários, com motivo e data.
+- 👤 **Dados do administrador:** Informações de login e permissões dos administradores do sistema.
+- 👨‍💼 **Informações dos estagiários:** Nome, carga horária prevista, horas extras, faltas e histórico de alterações.
+
 
 
 
