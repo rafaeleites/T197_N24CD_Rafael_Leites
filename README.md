@@ -67,8 +67,7 @@ Essa é a estrutura principal do projeto
 
 
 
-![Design sem nome (5)](https://github.com/user-attachments/assets/0dbd6f6c-b9bb-4f54-b996-74fc0caffdb6)
-
+![Design sem nome (6)](https://github.com/user-attachments/assets/330b41de-bb97-4f52-9ddb-4c187d0d7193)
 
 
 
