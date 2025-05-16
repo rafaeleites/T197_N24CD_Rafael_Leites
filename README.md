@@ -65,8 +65,9 @@ Essa é a estrutura principal do projeto
 
 ## Tela principais e principais funcionalidades
 
-![Design sem nome](https://github.com/user-attachments/assets/193a67f5-eb16-4876-bda2-1751603fe4d2)
 
+
+![Design sem nome (5)](https://github.com/user-attachments/assets/0dbd6f6c-b9bb-4f54-b996-74fc0caffdb6)
 
 
 
