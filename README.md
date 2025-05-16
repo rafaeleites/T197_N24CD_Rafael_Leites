@@ -62,4 +62,18 @@ Pressione "a" para emular no android studio se for o caso, ou scanear o QRcode p
 
 Essa é a estrutura principal do projeto
 
+## Tela principais e principais funcionalidades
+
+![WhatsApp Image 2025-05-16 at 7 02 06 PM (2)](https://github.com/user-attachments/assets/054ab6d4-2599-491c-bbc8-0f2eaedfcfab)
+
+Tela de moderador para alterar todos os dados dos estagiários
+![WhatsApp Image 2025-05-16 at 7 02 06 PM (1)](https://github.com/user-attachments/assets/f555dd31-5111-4743-b21c-e9c7eaead961)
+
+Tela de Registros dos estagiarios (histórico de pontos)
+![WhatsApp Image 2025-05-16 at 7 02 06 PM](https://github.com/user-attachments/assets/c850c66c-7c71-44ba-958c-b03fd8a82402)
+
+
+
+
+
 
