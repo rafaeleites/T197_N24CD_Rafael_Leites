@@ -56,10 +56,28 @@ Veja todas as dependências atualizadas no [package.json](https://github.com/raf
 
 Pressione "a" para emular no android studio se for o caso, ou scanear o QRcode pela câmera normal mesmo (Lembre-se de baixar o expo go).
 
-## 📂 Estrutura do Projeto
+## 📁 Estrutura do Projeto
+
 ![image](https://github.com/user-attachments/assets/a8b49f26-ad4a-41bb-9cf4-e1af1b19cef3)
 
-Essa é a estrutura principal do projeto
+Essa é a estrutura principal do projeto:
+
+- **.expo/**: Arquivos gerados automaticamente pelo Expo (não altere manualmente).
+- **assets/**: Contém imagens, ícones e outros arquivos estáticos usados no app.
+- **Back-End/**: Código relacionado à lógica de servidor e integração com o Firebase.
+  - **controllers/**: Funções que processam as requisições.
+  - **data/**: Dados usados localmente, se houver.
+  - **models/**: Modelos de dados (estrutura das entidades).
+  - **routes/**: Arquivos com definição das rotas.
+- **components/**: Componentes reutilizáveis da interface, como botões e inputs.
+- **screens/**: Telas principais da aplicação (ex: Login, Dashboard, Justificativas).
+- **App.js**: Ponto de entrada do aplicativo.
+- **app.json**: Configurações do projeto Expo.
+- **index.js**: Registro do aplicativo na raiz do projeto.
+- **package.json**: Lista de dependências e scripts do projeto.
+- **README.md**: Arquivo com a documentação do projeto.
+- **styles.js**: Estilos globais usados no app.
+
 
 ## Visão geral das telas
 
