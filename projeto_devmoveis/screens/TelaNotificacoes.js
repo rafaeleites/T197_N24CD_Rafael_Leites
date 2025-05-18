@@ -36,6 +36,7 @@ const TelaNotificacoes = () => {
           Object.entries(registros).forEach(([data, info]) => {
             const entrada = info.entrada || null;
             const saida = info.saida || null;
+            const pausas = info.pausas || {};
 
             if (!entrada && !saida) {
               listaNotificacoes.push({
@@ -46,12 +47,37 @@ const TelaNotificacoes = () => {
                 tipo: 'Falta',
               });
             } else {
-              const [hEntrada, mEntrada] = entrada ? entrada.split(':').map(Number) : [0, 0];
-              const [hSaida, mSaida] = saida ? saida.split(':').map(Number) : [0, 0];
+              let hEntrada = 0, mEntrada = 0, hSaida = 0, mSaida = 0;
+              if (entrada && typeof entrada === 'string' && entrada.includes(':')) {
+                [hEntrada, mEntrada] = entrada.split(':').map(Number);
+              }
+              if (saida && typeof saida === 'string' && saida.includes(':')) {
+                [hSaida, mSaida] = saida.split(':').map(Number);
+              }
               const inicio = new Date(0, 0, 0, hEntrada, mEntrada);
               const fim = new Date(0, 0, 0, hSaida, mSaida);
 
-              const totalMinutos = (fim - inicio) / 60000 - 60;
+              // Calcular total de minutos de pausa
+              let totalPausaMinutos = 0;
+              Object.values(pausas).forEach((pausa) => {
+                if (typeof pausa === 'string' && pausa.includes('-')) {
+                  const [inicioPausa, fimPausa] = pausa.split('-');
+                  if (
+                    inicioPausa &&
+                    fimPausa &&
+                    inicioPausa.includes(':') &&
+                    fimPausa.includes(':')
+                  ) {
+                    const [hIni, mIni] = inicioPausa.split(':').map(Number);
+                    const [hFim, mFim] = fimPausa.split(':').map(Number);
+                    const iniPausa = new Date(0, 0, 0, hIni, mIni);
+                    const fimPausaDate = new Date(0, 0, 0, hFim, mFim);
+                    totalPausaMinutos += (fimPausaDate - iniPausa) / 60000;
+                  }
+                }
+              });
+
+              const totalMinutos = (fim - inicio) / 60000 - totalPausaMinutos;
               const totalHoras = totalMinutos / 60;
 
               if (hEntrada > 9 || (hEntrada === 9 && mEntrada > 0)) {
